@@ -280,6 +280,31 @@ async def on_message(message):
         elif new_progress != progress:
             db.update_quest_progress(user_id, quest_id, new_progress, 0)
     
+    # Secret Quest: CBD Counter (only you know about this!)
+    if "cbd" in content:
+        secret_quest_id = 999
+        secret_progress, secret_completed = db.get_quest_progress(user_id, secret_quest_id)
+        
+        if not secret_completed:
+            secret_progress += 1
+            
+            if secret_progress >= 100:
+                db.update_quest_progress(user_id, secret_quest_id, secret_progress, 1)
+                db.update_balance(user_id, 10000)
+                
+                embed = discord.Embed(
+                    title=f"🎊 SECRET QUEST UNLOCKED! 🎊",
+                    description=f"**🌿 The CBD Master**\nYou discovered and completed the secret quest!",
+                    color=discord.Color.purple()
+                )
+                embed.add_field(name="💰 Secret Reward", value=f"+10,000 coins!", inline=False)
+                embed.add_field(name="📊 Progress", value=f"You typed 'cbd' {secret_progress} times!", inline=False)
+                embed.set_footer(text=f"Congratulations, {username}! You're one of the few who knows...")
+                
+                await message.channel.send(embed=embed)
+            else:
+                db.update_quest_progress(user_id, secret_quest_id, secret_progress, 0)
+    
     await bot.process_commands(message)
 
 @bot.command(name='setup')
