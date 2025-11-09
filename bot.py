@@ -59,6 +59,46 @@ async def on_ready():
     print(f'✅ Ready to serve!')
 
 @bot.event
+async def on_member_join(member):
+    settings = db.get_server_settings(member.guild.id)
+    
+    if not settings:
+        return
+    
+    welcome_channel_id = settings[4] if len(settings) > 4 else None
+    
+    if not welcome_channel_id:
+        return
+    
+    channel = member.guild.get_channel(welcome_channel_id)
+    
+    if not channel:
+        return
+    
+    member_count = member.guild.member_count
+    
+    embed = discord.Embed(
+        title="👋 Welcome to the Server!",
+        description=f"Hey {member.mention}, welcome to **{member.guild.name}**!",
+        color=discord.Color.blue()
+    )
+    embed.set_thumbnail(url=member.display_avatar.url)
+    embed.add_field(
+        name="👥 Member Count",
+        value=f"You are member **#{member_count}**!",
+        inline=False
+    )
+    embed.add_field(
+        name="🎮 Get Started",
+        value=f"Use `a help` to see all available commands and start your adventure!",
+        inline=False
+    )
+    embed.set_footer(text=f"Welcome to {member.guild.name}!", icon_url=member.guild.icon.url if member.guild.icon else None)
+    embed.timestamp = datetime.now()
+    
+    await channel.send(embed=embed)
+
+@bot.event
 async def on_reaction_add(reaction, user):
     if user.bot:
         return
@@ -581,7 +621,8 @@ async def help_command(ctx):
     embed.add_field(
         name="⚙️ Admin Commands",
         value="`a setup <ip> <port>` - Setup Minecraft server\n"
-              "`a setupchannel [#channel]` - Set console channel",
+              "`a setupchannel [#channel]` - Set console channel\n"
+              "`a welcome [#channel]` - Set welcome channel",
         inline=False
     )
     
