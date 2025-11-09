@@ -273,6 +273,29 @@ async def setupchannel(ctx, channel: discord.TextChannel = None):
     
     await ctx.send(embed=embed)
 
+@bot.command(name='welcome')
+@commands.has_permissions(administrator=True)
+async def welcome(ctx, channel: discord.TextChannel = None):
+    """👋 Setup welcome channel for new members (Admin only)"""
+    if channel is None:
+        channel = ctx.channel
+    
+    db.set_server_settings(ctx.guild.id, welcome_channel_id=channel.id)
+    
+    embed = discord.Embed(
+        title="✅ Welcome Channel Configured!",
+        description=f"New members will be welcomed in {channel.mention}",
+        color=discord.Color.green()
+    )
+    embed.add_field(
+        name="📋 What happens next?",
+        value="When someone joins the server, they'll receive a welcome message with the member count!",
+        inline=False
+    )
+    embed.set_footer(text=f"Set by {ctx.author}")
+    
+    await ctx.send(embed=embed)
+
 @bot.command(name='balance', aliases=['bal', 'money'])
 async def balance(ctx, member: discord.Member = None):
     """💰 Check your balance or someone else's"""
