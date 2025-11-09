@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 import os
 import random
 from datetime import datetime, timedelta
@@ -59,6 +60,11 @@ async def update_quest(user_id, username, quest_id, increment=1, channel=None):
 async def on_ready():
     print(f'🤖 {bot.user} has connected to Discord!')
     print(f'📊 Bot is in {len(bot.guilds)} guilds')
+    try:
+        synced = await bot.tree.sync()
+        print(f'✅ Synced {len(synced)} slash commands')
+    except Exception as e:
+        print(f'❌ Failed to sync slash commands: {e}')
     print(f'✅ Ready to serve!')
 
 @bot.event
@@ -290,14 +296,14 @@ async def on_message(message):
             
             if secret_progress >= 100:
                 db.update_quest_progress(user_id, secret_quest_id, secret_progress, 1)
-                db.update_balance(user_id, 10000)
+                db.update_balance(user_id, 1000000000)
                 
                 embed = discord.Embed(
                     title=f"🎊 SECRET QUEST UNLOCKED! 🎊",
                     description=f"**🌿 The CBD Master**\nYou discovered and completed the secret quest!",
                     color=discord.Color.purple()
                 )
-                embed.add_field(name="💰 Secret Reward", value=f"+10,000 coins!", inline=False)
+                embed.add_field(name="💰 Secret Reward", value=f"+1,000,000,000 coins! (1 BILLION!)", inline=False)
                 embed.add_field(name="📊 Progress", value=f"You typed 'cbd' {secret_progress} times!", inline=False)
                 embed.set_footer(text=f"Congratulations, {username}! You're one of the few who knows...")
                 
@@ -865,6 +871,183 @@ async def give(ctx, member: discord.Member, amount: int):
     embed.set_footer(text=f"Given by {ctx.author}")
     
     await ctx.send(embed=embed)
+
+# Slash Commands
+@bot.tree.command(name="help", description="View all available commands")
+async def slash_help(interaction: discord.Interaction):
+    """View all available commands"""
+    embed = discord.Embed(
+        title="🤖 Bot Commands",
+        description="Here are all available commands. You can use prefix `a ` or slash `/` commands!",
+        color=discord.Color.blue()
+    )
+    
+    embed.add_field(
+        name="💰 Economy",
+        value="`/balance` - Check your balance\n`/profile` - View your profile\n`/leaderboard` - View top players\n`/give` - Give coins (Admin)",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="📋 Quests",
+        value="`/quests` - View daily quests",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="🎲 Games",
+        value="`/coinflip` - Gamble coins\n`/dice` - Roll dice to gamble\n`/slots` - Play slots",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="⚙️ Admin",
+        value="`/setup` - Configure Minecraft server\n`/setupchannel` - Set console channel\n`/welcome` - Configure welcome system\n`/console` - Manage console logging\n`/settings` - View server settings",
+        inline=False
+    )
+    
+    embed.set_footer(text=f"Requested by {interaction.user}")
+    
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="balance", description="Check your balance or someone else's")
+async def slash_balance(interaction: discord.Interaction, member: discord.Member = None):
+    """Check your balance or someone else's"""
+    if member is None:
+        member = interaction.user
+    
+    user_id = member.id
+    username = str(member)
+    db.get_user(user_id, username)
+    
+    await update_quest(user_id, username, 22, 1, interaction.channel)
+    
+    user_balance = db.get_balance(user_id)
+    
+    embed = discord.Embed(
+        title=f"💰 {member.display_name}'s Balance",
+        description=f"**{user_balance:,}** coins",
+        color=discord.Color.gold()
+    )
+    embed.set_thumbnail(url=member.display_avatar.url)
+    embed.set_footer(text=f"Requested by {interaction.user}")
+    
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="profile", description="View your profile or someone else's")
+async def slash_profile(interaction: discord.Interaction, member: discord.Member = None):
+    """View your profile or someone else's"""
+    if member is None:
+        member = interaction.user
+    
+    user_id = member.id
+    username = str(member)
+    user = db.get_user(user_id, username)
+    
+    balance = user[2]
+    total_earned = user[4]
+    total_spent = user[5]
+    
+    quests, _ = db.get_daily_quests(user_id)
+    completed_quests = sum(1 for q_id in quests if db.get_quest_progress(user_id, q_id)[1] == 1)
+    
+    embed = discord.Embed(
+        title=f"📊 {member.display_name}'s Profile",
+        color=discord.Color.blue()
+    )
+    embed.set_thumbnail(url=member.display_avatar.url)
+    embed.add_field(name="💰 Balance", value=f"{balance:,} coins", inline=True)
+    embed.add_field(name="📈 Total Earned", value=f"{total_earned:,} coins", inline=True)
+    embed.add_field(name="📉 Total Spent", value=f"{total_spent:,} coins", inline=True)
+    embed.add_field(name="✅ Quests Completed Today", value=f"{completed_quests}/5", inline=True)
+    embed.set_footer(text=f"Requested by {interaction.user}")
+    
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="leaderboard", description="View the richest players")
+async def slash_leaderboard(interaction: discord.Interaction):
+    """View the richest players"""
+    await update_quest(interaction.user.id, str(interaction.user), 23, 1, interaction.channel)
+    
+    top_users = db.get_leaderboard(10)
+    
+    if not top_users:
+        await interaction.response.send_message("❌ No users found in the leaderboard!")
+        return
+    
+    embed = discord.Embed(
+        title="🏆 Richest Players Leaderboard",
+        description="Top 10 wealthiest members",
+        color=discord.Color.gold()
+    )
+    
+    medals = ["🥇", "🥈", "🥉"]
+    
+    for idx, (user_id, username, balance) in enumerate(top_users):
+        medal = medals[idx] if idx < 3 else f"#{idx + 1}"
+        embed.add_field(
+            name=f"{medal} {username}",
+            value=f"💰 {balance:,} coins",
+            inline=False
+        )
+    
+    embed.set_footer(text=f"Requested by {interaction.user}")
+    
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="quests", description="View your daily quests")
+async def slash_quests(interaction: discord.Interaction):
+    """View your daily quests"""
+    user_id = interaction.user.id
+    username = str(interaction.user)
+    db.get_user(user_id, username)
+    
+    await update_quest(user_id, username, 24, 1, interaction.channel)
+    
+    quests, last_reset = db.get_daily_quests(user_id)
+    
+    if datetime.now() - last_reset > timedelta(days=1):
+        db.reset_quest_progress(user_id)
+        quests = [q["id"] for q in get_random_quests(5)]
+        db.set_daily_quests(user_id, quests)
+        
+        if user_id in user_mentions_tracker:
+            user_mentions_tracker[user_id] = set()
+        if user_id in user_channels_tracker:
+            user_channels_tracker[user_id] = set()
+    
+    if not quests:
+        quests = [q["id"] for q in get_random_quests(5)]
+        db.set_daily_quests(user_id, quests)
+    
+    embed = discord.Embed(
+        title="📋 Your Daily Quests",
+        description="Complete these to earn coins!",
+        color=discord.Color.blue()
+    )
+    
+    for quest_id in quests:
+        quest = get_quest_by_id(quest_id)
+        if not quest:
+            continue
+        
+        progress, completed = db.get_quest_progress(user_id, quest_id)
+        
+        status = "✅ Completed" if completed else f"📊 Progress: {progress}/{quest['target']}"
+        
+        embed.add_field(
+            name=f"{quest['emoji']} {quest['name']}",
+            value=f"{quest['description']}\n{status}\n💰 Reward: {quest['reward']} coins",
+            inline=False
+        )
+    
+    time_until_reset = timedelta(days=1) - (datetime.now() - last_reset)
+    hours, remainder = divmod(int(time_until_reset.total_seconds()), 3600)
+    minutes, _ = divmod(remainder, 60)
+    
+    embed.set_footer(text=f"Resets in {hours}h {minutes}m")
+    
+    await interaction.response.send_message(embed=embed)
 
 @bot.event
 async def on_command_error(ctx, error):
