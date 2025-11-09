@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleMenu() {
         sidebar.classList.toggle('mobile-open');
         overlay.classList.toggle('active');
+        menuBtn.classList.toggle('menu-open');
         menuBtn.innerHTML = sidebar.classList.contains('mobile-open') ? '✕' : '☰';
     }
     
