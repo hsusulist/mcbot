@@ -131,6 +131,18 @@ wheels = [
 ]
 
 [[package]]
+name = "asyncio-dgram"
+version = "2.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "setuptools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/34/6b/7c3e984ef144c2a034bd7c881f2ae0516df8e8f845909f757a3ae04e5532/asyncio-dgram-2.2.0.tar.gz", hash = "sha256:73362b491786153d8b888936c5780548b40b4e6f5e0d62bfef956cb7b6ed9684", size = 11944, upload-time = "2024-05-08T19:21:49.269Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/61/00/cb33d8a9ebad87c9507262b131c92659bcf62975320b7feb9acdfb260ba0/asyncio_dgram-2.2.0-py3-none-any.whl", hash = "sha256:7afe5a587d1d57908c7a02fe84c785f075d3fb59b555039a6ff8aead28622743", size = 7403, upload-time = "2024-05-08T19:21:48.138Z" },
+]
+
+[[package]]
 name = "attrs"
 version = "25.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -575,6 +587,19 @@ wheels = [
 ]
 
 [[package]]
+name = "mcstatus"
+version = "12.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "asyncio-dgram" },
+    { name = "dnspython" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/56/b9/e9d764dce7b197baf20b435a08e3b7271f803c2ed208d5e49490685e5133/mcstatus-12.0.6.tar.gz", hash = "sha256:16eff2abf5df211d0f04be59f4bc26e1b3120383d10486c4ddec2828cca00581", size = 135262, upload-time = "2025-10-20T15:52:55.294Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3f/6c/2a233996681c295eb0e579ce42b512e1d3ecec4fb7c017794c55b9a405c8/mcstatus-12.0.6-py3-none-any.whl", hash = "sha256:1823acf21abcfe03cf09eb0657b1a97d22cef8ff2b43c7f3bb082ef8a607b827", size = 43790, upload-time = "2025-10-20T15:52:53.721Z" },
+]
+
+[[package]]
 name = "multidict"
 version = "6.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -871,6 +896,7 @@ dependencies = [
     { name = "flask-cors" },
     { name = "flask-sqlalchemy" },
     { name = "gunicorn" },
+    { name = "mcstatus" },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
 ]
@@ -883,8 +909,18 @@ requires-dist = [
     { name = "flask-cors", specifier = ">=6.0.1" },
     { name = "flask-sqlalchemy", specifier = ">=3.1.1" },
     { name = "gunicorn", specifier = ">=23.0.0" },
+    { name = "mcstatus", specifier = ">=12.0.6" },
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
+]
+
+[[package]]
+name = "setuptools"
+version = "80.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/18/5d/3bf57dcd21979b887f014ea83c24ae194cfcd12b9e0fda66b957c69d1fca/setuptools-80.9.0.tar.gz", hash = "sha256:f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c", size = 1319958, upload-time = "2025-05-27T00:56:51.443Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a3/dc/17031897dae0efacfea57dfd3a82fdd2a2aeb58e0ff71b77b87e44edc772/setuptools-80.9.0-py3-none-any.whl", hash = "sha256:062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922", size = 1201486, upload-time = "2025-05-27T00:56:49.664Z" },
 ]
 
 [[package]]

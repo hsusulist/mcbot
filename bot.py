@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from database import Database
 from quests import get_random_quests, get_quest_by_id, QUEST_POOL
 from dotenv import load_dotenv
+from mcstatus import JavaServer
 
 load_dotenv()
 
@@ -176,6 +177,47 @@ async def on_message(message):
     content = message.content.lower()
     
     db.get_user(user_id, username)
+    
+    # XP System: 1 XP per message + 1 XP per unique mention
+    xp_gained = 1  # Base XP for sending a message
+    if message.mentions:
+        xp_gained += len(set(mention.id for mention in message.mentions))
+    
+    xp_result = db.add_xp(user_id, xp_gained)
+    
+    # Notify on level up
+    if xp_result and xp_result['leveled_up']:
+        embed = discord.Embed(
+            title="🎊 LEVEL UP! 🎊",
+            description=f"**{message.author.display_name}** reached **Level {xp_result['new_level']}**!",
+            color=discord.Color.purple()
+        )
+        embed.add_field(name="💰 Reward", value=f"+{xp_result['coins_earned']:,} coins!", inline=True)
+        embed.add_field(name="📊 Next Level", value=f"{xp_result['new_xp']}/{xp_result['xp_needed']} XP", inline=True)
+        embed.set_thumbnail(url=message.author.display_avatar.url)
+        embed.set_footer(text=f"Keep chatting to level up!")
+        
+        await message.channel.send(embed=embed)
+    
+    # Auto-respond to IP requests
+    if "ip" in content.split() or "server ip" in content or "what's the ip" in content or "whats the ip" in content:
+        if message.guild:
+            settings = db.get_server_settings(message.guild.id)
+            if settings and settings[1]:  # Check if server_ip exists
+                server_ip = settings[1]
+                server_port = settings[2] if settings[2] else "Default"
+                
+                embed = discord.Embed(
+                    title="🎮 Minecraft Server Info",
+                    description="Join our server with these details:",
+                    color=discord.Color.green()
+                )
+                embed.add_field(name="🌐 Server IP", value=f"`{server_ip}`", inline=False)
+                embed.add_field(name="🔌 Port", value=f"`{server_port}`", inline=False)
+                embed.set_footer(text="See you in game!")
+                
+                await message.channel.send(embed=embed)
+                return
     
     quests, last_reset = db.get_daily_quests(user_id)
     
@@ -512,12 +554,15 @@ async def profile(ctx, member: discord.Member = None):
     balance = user[2]
     total_earned = user[4]
     total_spent = user[5]
+    level, xp = db.get_level_xp(user_id)
+    xp_needed = level * 100
     
     quests, _ = db.get_daily_quests(user_id)
     completed_quests = sum(1 for q_id in quests if db.get_quest_progress(user_id, q_id)[1] == 1)
     
     embed = discord.Embed(
         title=f"📊 {member.display_name}'s Profile",
+        description=f"⭐ Level {level} | {xp}/{xp_needed} XP",
         color=discord.Color.blue()
     )
     embed.set_thumbnail(url=member.display_avatar.url)
@@ -615,8 +660,8 @@ async def quests(ctx):
     await ctx.send(embed=embed)
 
 @bot.command(name='cf', aliases=['coinflip', 'flip'])
-async def coinflip(ctx, amount: int, choice: str):
-    """🪙 Coinflip gambling - Double or nothing!"""
+async def coinflip(ctx, amount: str, choice: str):
+    """🪙 Coinflip gambling - Double or nothing! Use 'all' to bet everything!"""
     user_id = ctx.author.id
     username = str(ctx.author)
     db.get_user(user_id, username)
@@ -626,11 +671,22 @@ async def coinflip(ctx, amount: int, choice: str):
         await ctx.send("❌ Please choose 'heads' or 'tails'!")
         return
     
+    user_balance = db.get_balance(user_id)
+    
+    # Handle "all" parameter
+    if amount.lower() == 'all':
+        amount = user_balance
+    else:
+        try:
+            amount = int(amount)
+        except ValueError:
+            await ctx.send("❌ Amount must be a number or 'all'!")
+            return
+    
     if amount <= 0:
         await ctx.send("❌ Amount must be positive!")
         return
     
-    user_balance = db.get_balance(user_id)
     if user_balance < amount:
         await ctx.send(f"❌ You don't have enough coins! Your balance: {user_balance:,} coins")
         return
@@ -672,17 +728,28 @@ async def coinflip(ctx, amount: int, choice: str):
     await ctx.send(embed=embed)
 
 @bot.command(name='gamble', aliases=['slots', 'slot'])
-async def gamble(ctx, amount: int):
-    """🎰 Gamble with slot machine - 1/100 chance for x100!"""
+async def gamble(ctx, amount: str):
+    """🎰 Gamble with slot machine - 1/100 chance for x100! Use 'all' to bet everything!"""
     user_id = ctx.author.id
     username = str(ctx.author)
     db.get_user(user_id, username)
+    
+    user_balance = db.get_balance(user_id)
+    
+    # Handle "all" parameter
+    if amount.lower() == 'all':
+        amount = user_balance
+    else:
+        try:
+            amount = int(amount)
+        except ValueError:
+            await ctx.send("❌ Amount must be a number or 'all'!")
+            return
     
     if amount <= 0:
         await ctx.send("❌ Amount must be positive!")
         return
     
-    user_balance = db.get_balance(user_id)
     if user_balance < amount:
         await ctx.send(f"❌ You don't have enough coins! Your balance: {user_balance:,} coins")
         return
@@ -947,12 +1014,15 @@ async def slash_profile(interaction: discord.Interaction, member: discord.Member
     balance = user[2]
     total_earned = user[4]
     total_spent = user[5]
+    level, xp = db.get_level_xp(user_id)
+    xp_needed = level * 100
     
     quests, _ = db.get_daily_quests(user_id)
     completed_quests = sum(1 for q_id in quests if db.get_quest_progress(user_id, q_id)[1] == 1)
     
     embed = discord.Embed(
         title=f"📊 {member.display_name}'s Profile",
+        description=f"⭐ Level {level} | {xp}/{xp_needed} XP",
         color=discord.Color.blue()
     )
     embed.set_thumbnail(url=member.display_avatar.url)
@@ -1048,6 +1118,260 @@ async def slash_quests(interaction: discord.Interaction):
     embed.set_footer(text=f"Resets in {hours}h {minutes}m")
     
     await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="coinflip", description="Flip a coin and gamble! Use 'all' to bet everything")
+async def slash_coinflip(interaction: discord.Interaction, amount: str, choice: str):
+    """Coinflip gambling"""
+    user_id = interaction.user.id
+    username = str(interaction.user)
+    db.get_user(user_id, username)
+    
+    choice = choice.lower()
+    if choice not in ['heads', 'head', 'h', 'tails', 'tail', 't']:
+        await interaction.response.send_message("❌ Please choose 'heads' or 'tails'!", ephemeral=True)
+        return
+    
+    user_balance = db.get_balance(user_id)
+    
+    if amount.lower() == 'all':
+        bet_amount = user_balance
+    else:
+        try:
+            bet_amount = int(amount)
+        except ValueError:
+            await interaction.response.send_message("❌ Amount must be a number or 'all'!", ephemeral=True)
+            return
+    
+    if bet_amount <= 0:
+        await interaction.response.send_message("❌ Amount must be positive!", ephemeral=True)
+        return
+    
+    if user_balance < bet_amount:
+        await interaction.response.send_message(f"❌ You don't have enough coins! Your balance: {user_balance:,} coins", ephemeral=True)
+        return
+    
+    await update_quest(user_id, username, 16, 1, interaction.channel)
+    
+    result = random.choice(['heads', 'tails'])
+    user_choice_normalized = 'heads' if choice in ['heads', 'head', 'h'] else 'tails'
+    
+    won = result == user_choice_normalized
+    
+    if won:
+        db.update_balance(user_id, bet_amount)
+        new_balance = db.get_balance(user_id)
+        await update_quest(user_id, username, 18, 1, interaction.channel)
+        
+        embed = discord.Embed(
+            title="🎉 You Won!",
+            description=f"The coin landed on **{result}**!",
+            color=discord.Color.green()
+        )
+        embed.add_field(name="💰 Winnings", value=f"+{bet_amount:,} coins", inline=True)
+        embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
+    else:
+        db.update_balance(user_id, -bet_amount)
+        new_balance = db.get_balance(user_id)
+        
+        embed = discord.Embed(
+            title="😢 You Lost!",
+            description=f"The coin landed on **{result}**!",
+            color=discord.Color.red()
+        )
+        embed.add_field(name="💸 Lost", value=f"-{bet_amount:,} coins", inline=True)
+        embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
+    
+    embed.set_footer(text=f"{interaction.user}")
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="slots", description="Play the slot machine! Use 'all' to bet everything")
+async def slash_slots(interaction: discord.Interaction, amount: str):
+    """Slot machine gambling"""
+    user_id = interaction.user.id
+    username = str(interaction.user)
+    db.get_user(user_id, username)
+    
+    user_balance = db.get_balance(user_id)
+    
+    if amount.lower() == 'all':
+        bet_amount = user_balance
+    else:
+        try:
+            bet_amount = int(amount)
+        except ValueError:
+            await interaction.response.send_message("❌ Amount must be a number or 'all'!", ephemeral=True)
+            return
+    
+    if bet_amount <= 0:
+        await interaction.response.send_message("❌ Amount must be positive!", ephemeral=True)
+        return
+    
+    if user_balance < bet_amount:
+        await interaction.response.send_message(f"❌ You don't have enough coins! Your balance: {user_balance:,} coins", ephemeral=True)
+        return
+    
+    await update_quest(user_id, username, 17, 1, interaction.channel)
+    
+    roll = random.randint(1, 100)
+    emojis = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "7️⃣"]
+    slots = [random.choice(emojis) for _ in range(3)]
+    
+    if roll == 1:
+        winnings = bet_amount * 100
+        db.update_balance(user_id, winnings)
+        new_balance = db.get_balance(user_id)
+        
+        embed = discord.Embed(
+            title="🎰 JACKPOT! 💰",
+            description=f"{' '.join(['💎', '💎', '💎'])}\n\n**YOU HIT THE JACKPOT!**",
+            color=discord.Color.gold()
+        )
+        embed.add_field(name="🎉 Winnings", value=f"+{winnings:,} coins (x100!)", inline=True)
+        embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
+    elif roll <= 10:
+        winnings = bet_amount * 5
+        db.update_balance(user_id, winnings)
+        new_balance = db.get_balance(user_id)
+        
+        embed = discord.Embed(
+            title="🎰 Big Win!",
+            description=f"{' '.join(slots)}\n\nYou won big!",
+            color=discord.Color.green()
+        )
+        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x5!)", inline=True)
+        embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
+    elif roll <= 30:
+        winnings = bet_amount * 2
+        db.update_balance(user_id, winnings)
+        new_balance = db.get_balance(user_id)
+        
+        embed = discord.Embed(
+            title="🎰 You Won!",
+            description=f"{' '.join(slots)}\n\nNice!",
+            color=discord.Color.blue()
+        )
+        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x2!)", inline=True)
+        embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
+    else:
+        db.update_balance(user_id, -bet_amount)
+        new_balance = db.get_balance(user_id)
+        
+        embed = discord.Embed(
+            title="🎰 You Lost!",
+            description=f"{' '.join(slots)}\n\nBetter luck next time!",
+            color=discord.Color.red()
+        )
+        embed.add_field(name="💸 Lost", value=f"-{bet_amount:,} coins", inline=True)
+        embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
+    
+    embed.set_footer(text=f"{interaction.user}")
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="give", description="Give coins to another player")
+async def slash_give(interaction: discord.Interaction, member: discord.Member, amount: int):
+    """Transfer coins to another player"""
+    if amount <= 0:
+        await interaction.response.send_message("❌ Amount must be positive!", ephemeral=True)
+        return
+    
+    sender_id = interaction.user.id
+    sender_name = str(interaction.user)
+    receiver_id = member.id
+    receiver_name = str(member)
+    
+    if sender_id == receiver_id:
+        await interaction.response.send_message("❌ You can't give coins to yourself!", ephemeral=True)
+        return
+    
+    db.get_user(sender_id, sender_name)
+    db.get_user(receiver_id, receiver_name)
+    
+    sender_balance = db.get_balance(sender_id)
+    
+    if sender_balance < amount:
+        await interaction.response.send_message(f"❌ You don't have enough coins! Your balance: {sender_balance:,} coins", ephemeral=True)
+        return
+    
+    db.update_balance(sender_id, -amount)
+    db.update_balance(receiver_id, amount)
+    
+    sender_new_balance = db.get_balance(sender_id)
+    receiver_new_balance = db.get_balance(receiver_id)
+    
+    embed = discord.Embed(
+        title="✅ Money Transferred!",
+        description=f"{interaction.user.mention} gave **{amount:,}** coins to {member.mention}",
+        color=discord.Color.green()
+    )
+    embed.add_field(name=f"💳 {interaction.user.display_name}'s Balance", value=f"{sender_new_balance:,} coins", inline=True)
+    embed.add_field(name=f"💳 {member.display_name}'s Balance", value=f"{receiver_new_balance:,} coins", inline=True)
+    embed.set_footer(text=f"Transfer by {interaction.user}")
+    
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="setup", description="Setup the Minecraft server IP and port")
+@app_commands.checks.has_permissions(administrator=True)
+async def slash_setup(interaction: discord.Interaction, server_ip: str, server_port: int):
+    """Setup Minecraft server"""
+    db.set_server_settings(interaction.guild.id, server_ip=server_ip, server_port=server_port)
+    
+    embed = discord.Embed(
+        title="✅ Server Setup Complete!",
+        description=f"Minecraft server configured successfully",
+        color=discord.Color.green()
+    )
+    embed.add_field(name="🌐 Server IP", value=f"`{server_ip}`", inline=False)
+    embed.add_field(name="🔌 Port", value=f"`{server_port}`", inline=False)
+    embed.add_field(name="💡 Tip", value="Players can now type 'ip' to get the server info!", inline=False)
+    embed.set_footer(text=f"Set by {interaction.user}")
+    
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="checkserver", description="Check if the Minecraft server is online")
+async def slash_checkserver(interaction: discord.Interaction):
+    """Check Minecraft server status"""
+    settings = db.get_server_settings(interaction.guild.id)
+    
+    if not settings or not settings[1]:
+        await interaction.response.send_message("❌ Server IP not configured! Use `/setup` first.", ephemeral=True)
+        return
+    
+    server_ip = settings[1]
+    server_port = settings[2] if settings[2] else 25565
+    
+    await interaction.response.defer()
+    
+    try:
+        server = JavaServer.lookup(f"{server_ip}:{server_port}")
+        status = await server.async_status()
+        
+        embed = discord.Embed(
+            title="🟢 Server Online!",
+            description=f"**{server_ip}:{server_port}**",
+            color=discord.Color.green()
+        )
+        embed.add_field(name="👥 Players Online", value=f"{status.players.online}/{status.players.max}", inline=True)
+        embed.add_field(name="📊 Latency", value=f"{status.latency:.0f}ms", inline=True)
+        embed.add_field(name="🎮 Version", value=status.version.name, inline=True)
+        
+        if status.players.sample:
+            player_names = [player.name for player in status.players.sample[:10]]
+            embed.add_field(name="🎯 Players", value="\n".join(player_names), inline=False)
+        
+        embed.set_footer(text=f"Requested by {interaction.user}")
+        
+        await interaction.followup.send(embed=embed)
+        
+    except Exception as e:
+        embed = discord.Embed(
+            title="🔴 Server Offline",
+            description=f"**{server_ip}:{server_port}**\n\nThe server appears to be offline or unreachable.",
+            color=discord.Color.red()
+        )
+        embed.add_field(name="❌ Error", value=str(e)[:100], inline=False)
+        embed.set_footer(text=f"Requested by {interaction.user}")
+        
+        await interaction.followup.send(embed=embed)
 
 @bot.event
 async def on_command_error(ctx, error):

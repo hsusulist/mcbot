@@ -23,7 +23,9 @@ class Database:
                 daily_quests TEXT,
                 last_quest_reset TEXT,
                 total_earned INTEGER DEFAULT 0,
-                total_spent INTEGER DEFAULT 0
+                total_spent INTEGER DEFAULT 0,
+                level INTEGER DEFAULT 1,
+                xp INTEGER DEFAULT 0
             )
         ''')
         
@@ -53,6 +55,18 @@ class Database:
         
         try:
             cursor.execute('ALTER TABLE server_settings ADD COLUMN welcome_enabled INTEGER DEFAULT 1')
+            conn.commit()
+        except sqlite3.OperationalError:
+            pass
+        
+        try:
+            cursor.execute('ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1')
+            conn.commit()
+        except sqlite3.OperationalError:
+            pass
+        
+        try:
+            cursor.execute('ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0')
             conn.commit()
         except sqlite3.OperationalError:
             pass
@@ -212,3 +226,54 @@ class Database:
         results = cursor.fetchall()
         conn.close()
         return results
+    
+    def get_level_xp(self, user_id):
+        """Get user's level and XP"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT level, xp FROM users WHERE user_id = ?', (user_id,))
+        result = cursor.fetchone()
+        conn.close()
+        return result if result else (1, 0)
+    
+    def add_xp(self, user_id, xp_amount):
+        """Add XP to user and handle level ups"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT level, xp FROM users WHERE user_id = ?', (user_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            return None
+        
+        current_level, current_xp = result
+        new_xp = current_xp + xp_amount
+        
+        # Calculate XP needed for next level: level * 100
+        leveled_up = False
+        coins_earned = 0
+        
+        while new_xp >= current_level * 100:
+            new_xp -= current_level * 100
+            current_level += 1
+            leveled_up = True
+            coins_earned += current_level * 1000  # Level up reward
+        
+        cursor.execute('UPDATE users SET level = ?, xp = ? WHERE user_id = ?', 
+                      (current_level, new_xp, user_id))
+        
+        if coins_earned > 0:
+            cursor.execute('UPDATE users SET balance = balance + ?, total_earned = total_earned + ? WHERE user_id = ?', 
+                          (coins_earned, coins_earned, user_id))
+        
+        conn.commit()
+        conn.close()
+        
+        return {
+            'leveled_up': leveled_up,
+            'new_level': current_level,
+            'new_xp': new_xp,
+            'xp_needed': current_level * 100,
+            'coins_earned': coins_earned
+        }
