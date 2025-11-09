@@ -7,6 +7,8 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 - `bot.py` - Main bot file with all commands and event handlers
 - `database.py` - SQLite database manager for users, quests, and settings
 - `quests.py` - Quest pool with 40 unique daily quests
+- `web_server.py` - Simple HTTP server for web interface
+- `web/` - Web interface (HTML/CSS/JS) for bot setup and help
 - `minecraft_bot.db` - SQLite database (auto-created on first run)
 
 ## Key Features
@@ -27,6 +29,8 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 - Setup Minecraft server IP/port
 - Configure console channel
 - Setup welcome channel for new members
+- Toggle console logging on/off
+- Toggle welcome system on/off
 - Give coins to users
 
 ### Economy Commands  
@@ -55,6 +59,14 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 4. Database auto-initializes on first run
 
 ## Recent Changes
+- 2025-11-09: Web Interface & Toggle Commands
+  - Created web interface for bot token setup (no file saving for GitHub safety)
+  - Added help page with Minecraft mod integration guide
+  - Added `a console on/off/status` command for console logging toggle
+  - Added `a welcome on/off/status` command for welcome system toggle
+  - Database schema updated to store console_enabled and welcome_enabled flags
+  - Web server serves setup guide and mod documentation
+
 - 2025-11-09: Welcome System Feature
   - Added welcome channel setup command (`a welcome`)
   - Implemented on_member_join event handler
