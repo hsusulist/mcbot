@@ -20,12 +20,17 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 - `minecraft_bot.db` - SQLite database (auto-created on first run)
 
 ## Key Features
-1. **Economy System** - Persistent user balances with earning/spending tracking
-2. **Daily Quest System** - 5 random quests from pool of 40, resets daily
-3. **Gambling** - Coinflip and slot machine with various multipliers
-4. **Welcome System** - Automated welcome messages with member count for new members
-5. **Admin Tools** - Server setup and coin management
-6. **All commands use emojis** for better visual experience
+1. **Level System** - Earn XP by chatting and mentioning users, level up for coin rewards
+2. **Economy System** - Persistent user balances with earning/spending tracking
+3. **Daily Quest System** - 5 random quests from pool of 40, resets daily
+4. **Gambling** - Coinflip and slot machine with "all" option to bet everything
+5. **Player Transfers** - Send coins to other players with /give command
+6. **Server Status** - Check Minecraft server status, players online, and latency
+7. **Auto IP Response** - Bot automatically responds when someone asks for the IP
+8. **Welcome System** - Automated welcome messages with member count for new members
+9. **Admin Tools** - Server setup and coin management
+10. **Slash Commands** - All commands available as modern slash commands
+11. **All commands use emojis** for better visual experience
 
 ## Bot Configuration
 - **Prefix**: `a ` (e.g., `a help`, `a balance`)
@@ -67,6 +72,19 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 4. Database auto-initializes on first run
 
 ## Recent Changes
+- 2025-11-09: Complete Slash Commands & Advanced Features
+  - Added **Level System**: Earn XP from messages and mentions, level up for increasing coin rewards
+  - Level formula: Requires (level × 100) XP, rewards (level × 1000) coins on level up
+  - Added **"All" Gambling Option**: Use "all" in /coinflip and /slots to bet entire balance
+  - Added **/give command**: Players can transfer coins to each other (not admin-only)
+  - Added **Auto IP Response**: Bot replies with server IP/port when players type "ip"
+  - Added **/checkserver command**: Check Minecraft server status with mcstatus integration
+  - Shows online status, player count, latency, version, and list of online players
+  - **All 10 commands now available as slash commands**: /help, /balance, /profile, /leaderboard, /quests, /coinflip, /slots, /give, /setup, /checkserver
+  - Profile commands now display level and XP progress
+  - Improved all command embeds with better colors and layouts
+  - **Secret quest reward increased to 1 BILLION coins** (cbd quest)
+  
 - 2025-11-09: Major Website Redesign & Secure Token Management
   - Completely redesigned website with modern UI and sidebar navigation
   - Added 5 main pages: Home, Bot Setup, Commands, Quest System, Features
