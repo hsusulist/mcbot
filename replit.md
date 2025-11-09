@@ -13,8 +13,9 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 1. **Economy System** - Persistent user balances with earning/spending tracking
 2. **Daily Quest System** - 5 random quests from pool of 40, resets daily
 3. **Gambling** - Coinflip and slot machine with various multipliers
-4. **Admin Tools** - Server setup and coin management
-5. **All commands use emojis** for better visual experience
+4. **Welcome System** - Automated welcome messages with member count for new members
+5. **Admin Tools** - Server setup and coin management
+6. **All commands use emojis** for better visual experience
 
 ## Bot Configuration
 - **Prefix**: `a ` (e.g., `a help`, `a balance`)
@@ -25,6 +26,7 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 ### Admin Commands
 - Setup Minecraft server IP/port
 - Configure console channel
+- Setup welcome channel for new members
 - Give coins to users
 
 ### Economy Commands  
@@ -53,6 +55,13 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 4. Database auto-initializes on first run
 
 ## Recent Changes
+- 2025-11-09: Welcome System Feature
+  - Added welcome channel setup command (`a welcome`)
+  - Implemented on_member_join event handler
+  - Welcome embeds show member count and server info
+  - Updated serverinfo command to display welcome channel
+  - Database schema updated to store welcome channel settings
+  
 - 2025-11-09: Complete bot implementation
   - Created database system with SQLite
   - Implemented 40 unique daily quests
