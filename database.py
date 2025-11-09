@@ -32,9 +32,16 @@ class Database:
                 guild_id INTEGER PRIMARY KEY,
                 server_ip TEXT,
                 server_port INTEGER,
-                console_channel_id INTEGER
+                console_channel_id INTEGER,
+                welcome_channel_id INTEGER
             )
         ''')
+        
+        try:
+            cursor.execute('ALTER TABLE server_settings ADD COLUMN welcome_channel_id INTEGER')
+            conn.commit()
+        except sqlite3.OperationalError:
+            pass
         
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS quest_progress (
@@ -142,7 +149,7 @@ class Database:
         conn.commit()
         conn.close()
     
-    def set_server_settings(self, guild_id, server_ip=None, server_port=None, console_channel_id=None):
+    def set_server_settings(self, guild_id, server_ip=None, server_port=None, console_channel_id=None, welcome_channel_id=None):
         conn = self.get_connection()
         cursor = conn.cursor()
         
@@ -156,11 +163,13 @@ class Database:
                 cursor.execute('UPDATE server_settings SET server_port = ? WHERE guild_id = ?', (server_port, guild_id))
             if console_channel_id is not None:
                 cursor.execute('UPDATE server_settings SET console_channel_id = ? WHERE guild_id = ?', (console_channel_id, guild_id))
+            if welcome_channel_id is not None:
+                cursor.execute('UPDATE server_settings SET welcome_channel_id = ? WHERE guild_id = ?', (welcome_channel_id, guild_id))
         else:
             cursor.execute('''
-                INSERT INTO server_settings (guild_id, server_ip, server_port, console_channel_id)
-                VALUES (?, ?, ?, ?)
-            ''', (guild_id, server_ip, server_port, console_channel_id))
+                INSERT INTO server_settings (guild_id, server_ip, server_port, console_channel_id, welcome_channel_id)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (guild_id, server_ip, server_port, console_channel_id, welcome_channel_id))
         
         conn.commit()
         conn.close()
