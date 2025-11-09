@@ -5,6 +5,9 @@ import random
 from datetime import datetime, timedelta
 from database import Database
 from quests import get_random_quests, get_quest_by_id, QUEST_POOL
+from dotenv import load_dotenv
+
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True

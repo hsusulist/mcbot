@@ -58,9 +58,24 @@ def save_token():
     if len(parts) != 3:
         return jsonify({'success': False, 'message': 'Invalid token format'}), 400
     
-    os.environ['DISCORD_BOT_TOKEN'] = token
-    
-    return jsonify({'success': True, 'message': 'Token saved successfully! Bot will restart automatically.'})
+    try:
+        env_content = ''
+        if os.path.exists('.env'):
+            with open('.env', 'r') as f:
+                lines = f.readlines()
+                env_content = ''.join([line for line in lines if not line.startswith('DISCORD_BOT_TOKEN=')])
+        
+        with open('.env', 'w') as f:
+            f.write(env_content)
+            f.write(f'DISCORD_BOT_TOKEN={token}\n')
+        
+        os.environ['DISCORD_BOT_TOKEN'] = token
+        
+        subprocess.Popen(['pkill', '-f', 'python.*bot.py'])
+        
+        return jsonify({'success': True, 'message': 'Token saved successfully! Bot will restart automatically.'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error saving token: {str(e)}'}), 500
 
 @app.route('/api/bot/status')
 def bot_status():

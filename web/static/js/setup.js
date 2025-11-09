@@ -42,7 +42,7 @@ async function saveToken() {
             resultDiv.innerHTML = `
                 <strong>✅ Success!</strong> Your bot token has been saved securely.<br><br>
                 <strong>What happens next:</strong><br>
-                • Token is stored in environment variables (NOT in files)<br>
+                • Token is saved to .env file (excluded from Git)<br>
                 • Safe to push your code to GitHub<br>
                 • The Discord Bot workflow will restart automatically<br>
                 • Check the bot status indicator to confirm it's online<br><br>
