@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Mod Help</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <h1>🤖 Minecraft Discord Bot</h1>
+            <div class="nav-links">
+                <a href="index.html">Bot Token</a>
+                <a href="help.html" class="active">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>⛏️ Minecraft Server Console Integration</h2>
+            
+            <div class="step">
+                <h3>What Mod Do I Need?</h3>
+                <p>To connect your Minecraft server console to Discord, you'll need a server-side mod that bridges Minecraft with Discord.</p>
+                
+                <h4>Recommended Mods:</h4>
+                
+                <div class="mod-option">
+                    <h5>1. DiscordSRV (Most Popular)</h5>
+                    <ul>
+                        <li><strong>Platform:</strong> Spigot, Paper, Bukkit</li>
+                        <li><strong>Download:</strong> <a href="https://www.spigotmc.org/resources/discordsrv.18494/" target="_blank">SpigotMC</a></li>
+                        <li><strong>Features:</strong>
+                            <ul>
+                                <li>Console output to Discord</li>
+                                <li>Chat bridging between Minecraft and Discord</li>
+                                <li>Player join/leave notifications</li>
+                                <li>Death messages</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mod-option">
+                    <h5>2. Minecraft Discord Integration</h5>
+                    <ul>
+                        <li><strong>Platform:</strong> Fabric, Forge</li>
+                        <li><strong>Download:</strong> <a href="https://www.curseforge.com/minecraft/mc-mods/minecraft-discord-integration" target="_blank">CurseForge</a></li>
+                        <li><strong>Features:</strong>
+                            <ul>
+                                <li>Console logging</li>
+                                <li>Player activity tracking</li>
+                                <li>Server status updates</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mod-option">
+                    <h5>3. Discord Integration (Fabric)</h5>
+                    <ul>
+                        <li><strong>Platform:</strong> Fabric</li>
+                        <li><strong>Download:</strong> <a href="https://modrinth.com/mod/dcintegration" target="_blank">Modrinth</a></li>
+                        <li><strong>Features:</strong>
+                            <ul>
+                                <li>Lightweight integration</li>
+                                <li>Chat sync</li>
+                                <li>Basic console output</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>Setup Instructions</h3>
+                <ol>
+                    <li><strong>Download the mod</strong> for your server platform (Spigot/Paper/Fabric/Forge)</li>
+                    <li><strong>Install</strong> it in your server's <code>plugins/</code> or <code>mods/</code> folder</li>
+                    <li><strong>Restart</strong> your Minecraft server</li>
+                    <li><strong>Configure</strong> the mod:
+                        <ul>
+                            <li>Add your Discord bot token in the mod's config file</li>
+                            <li>Set the console channel ID (use Discord Developer Mode to get channel IDs)</li>
+                            <li>Configure which events to log</li>
+                        </ul>
+                    </li>
+                    <li><strong>Restart</strong> the server again to apply changes</li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <h3>🤖 Bot Console Commands</h3>
+                <p>Your Discord bot now has admin-only console commands!</p>
+                
+                <div class="command-list">
+                    <div class="command">
+                        <code>a console on</code>
+                        <p>Enable console logging to Discord</p>
+                    </div>
+                    <div class="command">
+                        <code>a console off</code>
+                        <p>Disable console logging</p>
+                    </div>
+                    <div class="command">
+                        <code>a console status</code>
+                        <p>Check if console logging is enabled</p>
+                    </div>
+                    <div class="command">
+                        <code>a welcome on</code>
+                        <p>Enable welcome messages for new members</p>
+                    </div>
+                    <div class="command">
+                        <code>a welcome off</code>
+                        <p>Disable welcome messages</p>
+                    </div>
+                    <div class="command">
+                        <code>a welcome status</code>
+                        <p>Check if welcome system is enabled</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>⚠️ Important Notes</h3>
+                <ul>
+                    <li>Console mods require the <strong>same Discord bot token</strong> as your economy bot</li>
+                    <li>Make sure your bot has <strong>permission to send messages</strong> in the console channel</li>
+                    <li>Console logging can be <strong>very chatty</strong> - consider using a dedicated channel</li>
+                    <li>Some mods may conflict - test thoroughly before using on a production server</li>
+                </ul>
+            </div>
+
+            <div class="step success">
+                <h3>Need More Help?</h3>
+                <p>Check the documentation for your chosen mod, or ask in their Discord support servers!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

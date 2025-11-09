@@ -66,8 +66,9 @@ async def on_member_join(member):
         return
     
     welcome_channel_id = settings[4] if len(settings) > 4 else None
+    welcome_enabled = settings[6] if len(settings) > 6 else 1
     
-    if not welcome_channel_id:
+    if not welcome_channel_id or not welcome_enabled:
         return
     
     channel = member.guild.get_channel(welcome_channel_id)
@@ -315,26 +316,130 @@ async def setupchannel(ctx, channel: discord.TextChannel = None):
 
 @bot.command(name='welcome')
 @commands.has_permissions(administrator=True)
-async def welcome(ctx, channel: discord.TextChannel = None):
-    """👋 Setup welcome channel for new members (Admin only)"""
-    if channel is None:
-        channel = ctx.channel
+async def welcome_cmd(ctx, action: str = None, channel: discord.TextChannel = None):
+    """👋 Manage welcome system (Admin only)"""
+    if action is None:
+        if channel is None:
+            channel = ctx.channel
+        
+        db.set_server_settings(ctx.guild.id, welcome_channel_id=channel.id)
+        
+        embed = discord.Embed(
+            title="✅ Welcome Channel Configured!",
+            description=f"New members will be welcomed in {channel.mention}",
+            color=discord.Color.green()
+        )
+        embed.add_field(
+            name="📋 What happens next?",
+            value="When someone joins the server, they'll receive a welcome message with the member count!",
+            inline=False
+        )
+        embed.set_footer(text=f"Set by {ctx.author}")
+        
+        await ctx.send(embed=embed)
     
-    db.set_server_settings(ctx.guild.id, welcome_channel_id=channel.id)
+    elif action.lower() == "on":
+        db.set_server_settings(ctx.guild.id, welcome_enabled=1)
+        
+        embed = discord.Embed(
+            title="✅ Welcome System Enabled!",
+            description="New members will receive welcome messages",
+            color=discord.Color.green()
+        )
+        embed.set_footer(text=f"Enabled by {ctx.author}")
+        
+        await ctx.send(embed=embed)
     
-    embed = discord.Embed(
-        title="✅ Welcome Channel Configured!",
-        description=f"New members will be welcomed in {channel.mention}",
-        color=discord.Color.green()
-    )
-    embed.add_field(
-        name="📋 What happens next?",
-        value="When someone joins the server, they'll receive a welcome message with the member count!",
-        inline=False
-    )
-    embed.set_footer(text=f"Set by {ctx.author}")
+    elif action.lower() == "off":
+        db.set_server_settings(ctx.guild.id, welcome_enabled=0)
+        
+        embed = discord.Embed(
+            title="⏸️ Welcome System Disabled",
+            description="New members will not receive welcome messages",
+            color=discord.Color.orange()
+        )
+        embed.set_footer(text=f"Disabled by {ctx.author}")
+        
+        await ctx.send(embed=embed)
     
-    await ctx.send(embed=embed)
+    elif action.lower() == "status":
+        settings = db.get_server_settings(ctx.guild.id)
+        
+        if not settings:
+            await ctx.send("❌ Server not configured! Ask an admin to use `a welcome #channel`")
+            return
+        
+        welcome_enabled = settings[6] if len(settings) > 6 else 1
+        welcome_channel_id = settings[4] if len(settings) > 4 else None
+        
+        status = "✅ Enabled" if welcome_enabled else "❌ Disabled"
+        channel_info = f"<#{welcome_channel_id}>" if welcome_channel_id else "Not configured"
+        
+        embed = discord.Embed(
+            title="👋 Welcome System Status",
+            color=discord.Color.blue()
+        )
+        embed.add_field(name="Status", value=status, inline=True)
+        embed.add_field(name="Channel", value=channel_info, inline=True)
+        embed.set_footer(text=f"Requested by {ctx.author}")
+        
+        await ctx.send(embed=embed)
+
+@bot.command(name='console')
+@commands.has_permissions(administrator=True)
+async def console_cmd(ctx, action: str = "status"):
+    """📺 Manage console logging (Admin only)"""
+    if action.lower() == "on":
+        db.set_server_settings(ctx.guild.id, console_enabled=1)
+        
+        embed = discord.Embed(
+            title="✅ Console Logging Enabled!",
+            description="Console output will be sent to Discord",
+            color=discord.Color.green()
+        )
+        embed.add_field(
+            name="📋 Note",
+            value="Make sure you have the Minecraft server mod configured!",
+            inline=False
+        )
+        embed.set_footer(text=f"Enabled by {ctx.author}")
+        
+        await ctx.send(embed=embed)
+    
+    elif action.lower() == "off":
+        db.set_server_settings(ctx.guild.id, console_enabled=0)
+        
+        embed = discord.Embed(
+            title="⏸️ Console Logging Disabled",
+            description="Console output will not be sent to Discord",
+            color=discord.Color.orange()
+        )
+        embed.set_footer(text=f"Disabled by {ctx.author}")
+        
+        await ctx.send(embed=embed)
+    
+    elif action.lower() == "status":
+        settings = db.get_server_settings(ctx.guild.id)
+        
+        if not settings:
+            await ctx.send("❌ Server not configured! Ask an admin to use `a setupchannel`")
+            return
+        
+        console_enabled = settings[5] if len(settings) > 5 else 1
+        console_channel_id = settings[3] if len(settings) > 3 else None
+        
+        status = "✅ Enabled" if console_enabled else "❌ Disabled"
+        channel_info = f"<#{console_channel_id}>" if console_channel_id else "Not configured"
+        
+        embed = discord.Embed(
+            title="📺 Console Logging Status",
+            color=discord.Color.blue()
+        )
+        embed.add_field(name="Status", value=status, inline=True)
+        embed.add_field(name="Channel", value=channel_info, inline=True)
+        embed.set_footer(text=f"Requested by {ctx.author}")
+        
+        await ctx.send(embed=embed)
 
 @bot.command(name='balance', aliases=['bal', 'money'])
 async def balance(ctx, member: discord.Member = None):
@@ -622,7 +727,10 @@ async def help_command(ctx):
         name="⚙️ Admin Commands",
         value="`a setup <ip> <port>` - Setup Minecraft server\n"
               "`a setupchannel [#channel]` - Set console channel\n"
-              "`a welcome [#channel]` - Set welcome channel",
+              "`a welcome [#channel]` - Set welcome channel\n"
+              "`a welcome on/off/status` - Toggle welcome system\n"
+              "`a console on/off/status` - Toggle console logging\n"
+              "`a give @user <amount>` - Give coins to user",
         inline=False
     )
     

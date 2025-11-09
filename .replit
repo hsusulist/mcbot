@@ -17,6 +17,10 @@ author = "agent"
 task = "workflow.run"
 args = "Discord Bot"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Web Server"
+
 [[workflows.workflow]]
 name = "Discord Bot"
 author = "agent"
@@ -27,3 +31,19 @@ args = "python bot.py"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow]]
+name = "Web Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python web_server.py"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

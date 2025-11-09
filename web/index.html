@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Setup</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <h1>🤖 Minecraft Discord Bot</h1>
+            <div class="nav-links">
+                <a href="index.html" class="active">Bot Token</a>
+                <a href="help.html">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>🔑 Discord Bot Token Setup</h2>
+            <p class="warning">⚠️ <strong>Important:</strong> Never save your bot token in code files! Use Replit Secrets instead.</p>
+            
+            <div class="step">
+                <h3>Step 1: Get Your Bot Token</h3>
+                <ol>
+                    <li>Go to <a href="https://discord.com/developers/applications" target="_blank">Discord Developer Portal</a></li>
+                    <li>Select your application (or create a new one)</li>
+                    <li>Click on the <strong>"Bot"</strong> section</li>
+                    <li>Under "Token", click <strong>"Reset Token"</strong> or <strong>"Copy"</strong></li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <h3>Step 2: Enable Privileged Intents</h3>
+                <p>In the same Bot section, scroll down to "Privileged Gateway Intents" and enable:</p>
+                <ul>
+                    <li>✅ <strong>Presence Intent</strong></li>
+                    <li>✅ <strong>Server Members Intent</strong></li>
+                    <li>✅ <strong>Message Content Intent</strong></li>
+                </ul>
+                <p>Click <strong>"Save Changes"</strong></p>
+            </div>
+
+            <div class="step">
+                <h3>Step 3: Add Token to Replit Secrets</h3>
+                <div class="token-input">
+                    <label for="token">Paste your token here to validate it:</label>
+                    <textarea id="token" placeholder="Paste your Discord bot token here..."></textarea>
+                    <button onclick="validateToken()">Validate Token</button>
+                    <div id="validation-result"></div>
+                </div>
+                
+                <div class="instructions">
+                    <h4>How to add to Replit Secrets:</h4>
+                    <ol>
+                        <li>Click the <strong>lock icon 🔒</strong> in the left sidebar (Tools)</li>
+                        <li>Click <strong>"Secrets"</strong></li>
+                        <li>Add a new secret:
+                            <ul>
+                                <li><strong>Key:</strong> <code>DISCORD_BOT_TOKEN</code></li>
+                                <li><strong>Value:</strong> Your bot token</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>"Add secret"</strong></li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>Step 4: Invite Bot to Your Server</h3>
+                <ol>
+                    <li>In the Developer Portal, go to <strong>"OAuth2"</strong> → <strong>"URL Generator"</strong></li>
+                    <li>Select scopes: <code>bot</code></li>
+                    <li>Select permissions: 
+                        <ul>
+                            <li>Read Messages/View Channels</li>
+                            <li>Send Messages</li>
+                            <li>Embed Links</li>
+                            <li>Read Message History</li>
+                            <li>Add Reactions</li>
+                        </ul>
+                    </li>
+                    <li>Copy the generated URL and open it to invite your bot</li>
+                </ol>
+            </div>
+
+            <div class="step success">
+                <h3>✅ All Done!</h3>
+                <p>Once you've added the token to Secrets and enabled the intents, your bot is ready to run!</p>
+                <p>Use <code>a help</code> in Discord to see all commands.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
