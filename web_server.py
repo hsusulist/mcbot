@@ -65,7 +65,16 @@ def save_token():
 @app.route('/api/bot/status')
 def bot_status():
     has_token = os.getenv('DISCORD_BOT_TOKEN') is not None
-    return jsonify({'running': has_token, 'has_token': has_token})
+    
+    is_running = False
+    try:
+        result = subprocess.run(['pgrep', '-f', 'python.*bot.py'], 
+                              capture_output=True, text=True, timeout=2)
+        is_running = bool(result.stdout.strip())
+    except:
+        is_running = False
+    
+    return jsonify({'running': is_running, 'has_token': has_token})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
