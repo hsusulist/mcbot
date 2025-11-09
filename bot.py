@@ -681,7 +681,7 @@ async def serverinfo(ctx):
         await ctx.send("❌ Server not configured! Ask an admin to use `a setup`")
         return
     
-    _, server_ip, server_port, console_channel_id = settings
+    _, server_ip, server_port, console_channel_id, welcome_channel_id = settings
     
     embed = discord.Embed(
         title="⛏️ Minecraft Server Info",
@@ -696,6 +696,10 @@ async def serverinfo(ctx):
         channel = ctx.guild.get_channel(console_channel_id)
         if channel:
             embed.add_field(name="📺 Console Channel", value=channel.mention, inline=False)
+    if welcome_channel_id:
+        channel = ctx.guild.get_channel(welcome_channel_id)
+        if channel:
+            embed.add_field(name="👋 Welcome Channel", value=channel.mention, inline=False)
     
     embed.set_footer(text=f"Requested by {ctx.author}")
     
