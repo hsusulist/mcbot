@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Dashboard - Quest System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🤖 Discord Bot</h1>
+                <p>Minecraft Quest System</p>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="/" class="nav-link">
+                        <span class="icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="/setup" class="nav-link">
+                        <span class="icon">🔑</span>
+                        <span>Bot Setup</span>
+                        <span class="badge">Important</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Documentation</div>
+                    <a href="/commands" class="nav-link">
+                        <span class="icon">⚡</span>
+                        <span>Commands</span>
+                    </a>
+                    <a href="/quests" class="nav-link active">
+                        <span class="icon">📋</span>
+                        <span>Quest System</span>
+                    </a>
+                    <a href="/features" class="nav-link">
+                        <span class="icon">✨</span>
+                        <span>Features</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Resources</div>
+                    <a href="https://discord.com/developers/applications" target="_blank" class="nav-link">
+                        <span class="icon">🔗</span>
+                        <span>Discord Portal</span>
+                    </a>
+                    <a href="https://discord.gg" target="_blank" class="nav-link">
+                        <span class="icon">💬</span>
+                        <span>Join Discord</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>📋 Quest System</h1>
+                    <p>Daily quest types and rewards</p>
+                </div>
+                <div class="status-badge offline" id="bot-status">
+                    <span class="status-indicator"></span>
+                    <span id="status-text">Bot Offline</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>🌟 How the Quest System Works</h2>
+                <p>Every player receives 5 random daily quests that reset every 24 hours. Complete quests to earn coins!</p>
+                
+                <div class="alert info">
+                    <div class="alert-icon">💡</div>
+                    <div>
+                        <strong>Pro Tip:</strong> Use <code>a quests</code> in Discord to view your current daily quests and progress.
+                        Quests are tracked automatically as you chat and interact in the server!
+                    </div>
+                </div>
+
+                <h3>📋 Available Quest Types</h3>
+                <div class="quest-grid">
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">💬</div>
+                            <div class="quest-title">Chatterbox</div>
+                        </div>
+                        <div class="quest-description">Send messages in the server</div>
+                        <div class="quest-reward">💰 50-150 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">👋</div>
+                            <div class="quest-title">Friendly Greeting</div>
+                        </div>
+                        <div class="quest-description">Say hi, hello, or hey in chat</div>
+                        <div class="quest-reward">💰 75-200 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">👥</div>
+                            <div class="quest-title">Social Butterfly</div>
+                        </div>
+                        <div class="quest-description">Mention different people</div>
+                        <div class="quest-reward">💰 100-250 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">😀</div>
+                            <div class="quest-title">Emoji Enthusiast</div>
+                        </div>
+                        <div class="quest-description">Use emojis in your messages</div>
+                        <div class="quest-reward">💰 60-180 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">❓</div>
+                            <div class="quest-title">Curious Mind</div>
+                        </div>
+                        <div class="quest-description">Ask questions with "?"</div>
+                        <div class="quest-reward">💰 70-190 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">❗</div>
+                            <div class="quest-title">Enthusiastic</div>
+                        </div>
+                        <div class="quest-description">Use exclamation marks!</div>
+                        <div class="quest-reward">💰 60-170 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">😂</div>
+                            <div class="quest-title">Comedian</div>
+                        </div>
+                        <div class="quest-description">Make people laugh (lol, lmao, haha)</div>
+                        <div class="quest-reward">💰 80-210 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">📝</div>
+                            <div class="quest-title">Storyteller</div>
+                        </div>
+                        <div class="quest-description">Send long messages (100+ chars)</div>
+                        <div class="quest-reward">💰 90-230 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">🙏</div>
+                            <div class="quest-title">Grateful</div>
+                        </div>
+                        <div class="quest-description">Thank people (thanks, ty, thx)</div>
+                        <div class="quest-reward">💰 75-195 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">🎮</div>
+                            <div class="quest-title">GG Master</div>
+                        </div>
+                        <div class="quest-description">Say "gg" in chat</div>
+                        <div class="quest-reward">💰 65-175 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">🌅</div>
+                            <div class="quest-title">Early Bird</div>
+                        </div>
+                        <div class="quest-description">Send a message before 8 AM</div>
+                        <div class="quest-reward">💰 150-300 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">🦉</div>
+                            <div class="quest-title">Night Owl</div>
+                        </div>
+                        <div class="quest-description">Send a message after 10 PM</div>
+                        <div class="quest-reward">💰 150-300 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">🗺️</div>
+                            <div class="quest-title">Explorer</div>
+                        </div>
+                        <div class="quest-description">Chat in different channels</div>
+                        <div class="quest-reward">💰 100-250 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">⭐</div>
+                            <div class="quest-title">Positive Vibes</div>
+                        </div>
+                        <div class="quest-description">Use positive words (awesome, great, nice)</div>
+                        <div class="quest-reward">💰 80-220 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">🔗</div>
+                            <div class="quest-title">Link Sharer</div>
+                        </div>
+                        <div class="quest-description">Share links in chat</div>
+                        <div class="quest-reward">💰 70-190 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">💖</div>
+                            <div class="quest-title">React Master</div>
+                        </div>
+                        <div class="quest-description">React to messages</div>
+                        <div class="quest-reward">💰 60-180 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">❤️</div>
+                            <div class="quest-title">Spread Love</div>
+                        </div>
+                        <div class="quest-description">Use positive reactions (❤️, 👍, 💖)</div>
+                        <div class="quest-reward">💰 70-200 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">💰</div>
+                            <div class="quest-title">Balance Checker</div>
+                        </div>
+                        <div class="quest-description">Check your balance</div>
+                        <div class="quest-reward">💰 50-100 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">🏆</div>
+                            <div class="quest-title">Competitive</div>
+                        </div>
+                        <div class="quest-description">Check the leaderboard</div>
+                        <div class="quest-reward">💰 60-120 coins</div>
+                    </div>
+
+                    <div class="quest-card">
+                        <div class="quest-header">
+                            <div class="quest-emoji">📊</div>
+                            <div class="quest-title">Quest Tracker</div>
+                        </div>
+                        <div class="quest-description">View your daily quests</div>
+                        <div class="quest-reward">💰 50-110 coins</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/status.js"></script>
+</body>
+</html>

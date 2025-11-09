@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Dashboard - Commands</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🤖 Discord Bot</h1>
+                <p>Minecraft Quest System</p>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="/" class="nav-link">
+                        <span class="icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="/setup" class="nav-link">
+                        <span class="icon">🔑</span>
+                        <span>Bot Setup</span>
+                        <span class="badge">Important</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Documentation</div>
+                    <a href="/commands" class="nav-link active">
+                        <span class="icon">⚡</span>
+                        <span>Commands</span>
+                    </a>
+                    <a href="/quests" class="nav-link">
+                        <span class="icon">📋</span>
+                        <span>Quest System</span>
+                    </a>
+                    <a href="/features" class="nav-link">
+                        <span class="icon">✨</span>
+                        <span>Features</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Resources</div>
+                    <a href="https://discord.com/developers/applications" target="_blank" class="nav-link">
+                        <span class="icon">🔗</span>
+                        <span>Discord Portal</span>
+                    </a>
+                    <a href="https://discord.gg" target="_blank" class="nav-link">
+                        <span class="icon">💬</span>
+                        <span>Join Discord</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>⚡ Bot Commands</h1>
+                    <p>All available commands for your bot</p>
+                </div>
+                <div class="status-badge offline" id="bot-status">
+                    <span class="status-indicator"></span>
+                    <span id="status-text">Bot Offline</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>💰 Economy Commands</h2>
+                <div class="command-grid">
+                    <div class="command-card">
+                        <code>a balance [@user]</code>
+                        <p>Check your balance or someone else's. Aliases: <code>bal</code>, <code>money</code></p>
+                    </div>
+                    <div class="command-card">
+                        <code>a profile [@user]</code>
+                        <p>View detailed profile with total earned, spent, and quest completion stats. Aliases: <code>stats</code>, <code>me</code></p>
+                    </div>
+                    <div class="command-card">
+                        <code>a leaderboard</code>
+                        <p>View the top 10 richest players on the server. Aliases: <code>lb</code>, <code>top</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>📋 Quest Commands</h2>
+                <div class="command-grid">
+                    <div class="command-card">
+                        <code>a quests</code>
+                        <p>View your 5 daily quests with progress and rewards. Aliases: <code>quest</code>, <code>daily</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>🎰 Game Commands</h2>
+                <div class="command-grid">
+                    <div class="command-card">
+                        <code>a cf &lt;amount&gt; &lt;heads/tails&gt;</code>
+                        <p>Coinflip gambling - double your bet or lose it all! Aliases: <code>coinflip</code>, <code>flip</code></p>
+                        <p><strong>Example:</strong> <code>a cf 100 heads</code></p>
+                    </div>
+                    <div class="command-card">
+                        <code>a slots &lt;amount&gt;</code>
+                        <p>Spin the slot machine! Match 3 symbols to win big. Aliases: <code>slot</code>, <code>spin</code></p>
+                        <p><strong>Example:</strong> <code>a slots 50</code></p>
+                    </div>
+                    <div class="command-card">
+                        <code>a dice &lt;amount&gt;</code>
+                        <p>Roll a dice (1-6). Roll 5 or 6 to win 2x your bet!</p>
+                        <p><strong>Example:</strong> <code>a dice 75</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>🎁 Give & Trade Commands</h2>
+                <div class="command-grid">
+                    <div class="command-card">
+                        <code>a give @user &lt;amount&gt;</code>
+                        <p>Give coins to another player. Spread the wealth!</p>
+                        <p><strong>Example:</strong> <code>a give @Friend 200</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>⚙️ Admin Commands</h2>
+                <div class="alert warning">
+                    <div class="alert-icon">🔒</div>
+                    <div>
+                        <strong>Requires Administrator Permission:</strong> Only server administrators can use these commands.
+                    </div>
+                </div>
+                <div class="command-grid">
+                    <div class="command-card">
+                        <code>a setup &lt;server_ip&gt; &lt;port&gt;</code>
+                        <p>Configure Minecraft server IP and port for your Discord server.</p>
+                        <p><strong>Example:</strong> <code>a setup play.example.com 25565</code></p>
+                    </div>
+                    <div class="command-card">
+                        <code>a setupchannel [#channel]</code>
+                        <p>Set up console channel for server logs. Uses current channel if none specified.</p>
+                        <p><strong>Example:</strong> <code>a setupchannel #console</code></p>
+                    </div>
+                    <div class="command-card">
+                        <code>a welcome [on/off/status] [#channel]</code>
+                        <p>Manage welcome system. Configure channel and enable/disable welcome messages.</p>
+                        <p><strong>Examples:</strong></p>
+                        <p><code>a welcome #welcome</code> - Set welcome channel</p>
+                        <p><code>a welcome on</code> - Enable welcome messages</p>
+                        <p><code>a welcome off</code> - Disable welcome messages</p>
+                        <p><code>a welcome status</code> - Check current status</p>
+                    </div>
+                    <div class="command-card">
+                        <code>a console [on/off/status]</code>
+                        <p>Manage console logging to Discord.</p>
+                        <p><strong>Examples:</strong></p>
+                        <p><code>a console on</code> - Enable console logging</p>
+                        <p><code>a console off</code> - Disable console logging</p>
+                        <p><code>a console status</code> - Check current status</p>
+                    </div>
+                    <div class="command-card">
+                        <code>a addmoney @user &lt;amount&gt;</code>
+                        <p>Add coins to a user's balance (admin only).</p>
+                        <p><strong>Example:</strong> <code>a addmoney @Player 1000</code></p>
+                    </div>
+                    <div class="command-card">
+                        <code>a removemoney @user &lt;amount&gt;</code>
+                        <p>Remove coins from a user's balance (admin only).</p>
+                        <p><strong>Example:</strong> <code>a removemoney @Player 500</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>ℹ️ Info Commands</h2>
+                <div class="command-grid">
+                    <div class="command-card">
+                        <code>a help</code>
+                        <p>Display all available commands with descriptions.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/status.js"></script>
+</body>
+</html>

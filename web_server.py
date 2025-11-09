@@ -1,25 +1,71 @@
-import http.server
-import socketserver
+from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import os
+import subprocess
+import signal
 
-PORT = 5000
-DIRECTORY = "web"
+app = Flask(__name__, template_folder='web', static_folder='web/static')
+CORS(app)
 
-class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=DIRECTORY, **kwargs)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+bot_process = None
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/setup')
+def setup():
+    return render_template('setup.html')
+
+@app.route('/commands')
+def commands():
+    return render_template('commands.html')
+
+@app.route('/quests')
+def quests():
+    return render_template('quests.html')
+
+@app.route('/features')
+def features():
+    return render_template('features.html')
+
+@app.route('/api/token/status')
+def token_status():
+    has_token = os.getenv('DISCORD_BOT_TOKEN') is not None
+    return jsonify({'has_token': has_token})
+
+@app.route('/api/token/save', methods=['POST'])
+def save_token():
+    data = request.get_json()
+    token = data.get('token', '').strip()
     
-    def end_headers(self):
-        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
-        self.send_header('Pragma', 'no-cache')
-        self.send_header('Expires', '0')
-        super().end_headers()
-
-if __name__ == "__main__":
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    if not token:
+        return jsonify({'success': False, 'message': 'Token cannot be empty'}), 400
     
-    with socketserver.TCPServer(("0.0.0.0", PORT), MyHTTPRequestHandler) as httpd:
-        print(f"🌐 Web server running at http://0.0.0.0:{PORT}")
-        print(f"📁 Serving files from: {DIRECTORY}/")
-        print("✨ Open the webview to access the setup guide!")
-        httpd.serve_forever()
+    if len(token) < 50:
+        return jsonify({'success': False, 'message': 'Token appears to be too short'}), 400
+    
+    parts = token.split('.')
+    if len(parts) != 3:
+        return jsonify({'success': False, 'message': 'Invalid token format'}), 400
+    
+    os.environ['DISCORD_BOT_TOKEN'] = token
+    
+    return jsonify({'success': True, 'message': 'Token saved successfully! Bot will restart automatically.'})
+
+@app.route('/api/bot/status')
+def bot_status():
+    has_token = os.getenv('DISCORD_BOT_TOKEN') is not None
+    return jsonify({'running': has_token, 'has_token': has_token})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)

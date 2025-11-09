@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Dashboard - Setup</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🤖 Discord Bot</h1>
+                <p>Minecraft Quest System</p>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="/" class="nav-link">
+                        <span class="icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="/setup" class="nav-link active">
+                        <span class="icon">🔑</span>
+                        <span>Bot Setup</span>
+                        <span class="badge">Important</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Documentation</div>
+                    <a href="/commands" class="nav-link">
+                        <span class="icon">⚡</span>
+                        <span>Commands</span>
+                    </a>
+                    <a href="/quests" class="nav-link">
+                        <span class="icon">📋</span>
+                        <span>Quest System</span>
+                    </a>
+                    <a href="/features" class="nav-link">
+                        <span class="icon">✨</span>
+                        <span>Features</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Resources</div>
+                    <a href="https://discord.com/developers/applications" target="_blank" class="nav-link">
+                        <span class="icon">🔗</span>
+                        <span>Discord Portal</span>
+                    </a>
+                    <a href="https://discord.gg" target="_blank" class="nav-link">
+                        <span class="icon">💬</span>
+                        <span>Join Discord</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>🔑 Bot Setup</h1>
+                    <p>Configure your Discord bot token securely</p>
+                </div>
+                <div class="status-badge offline" id="bot-status">
+                    <span class="status-indicator"></span>
+                    <span id="status-text">Bot Offline</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>🔐 Discord Bot Token Configuration</h2>
+                
+                <div class="alert warning">
+                    <div class="alert-icon">⚠️</div>
+                    <div>
+                        <strong>Security Notice:</strong> Your token is stored in environment variables only (not in files). 
+                        This makes it safe to push your code to GitHub without exposing sensitive data.
+                    </div>
+                </div>
+
+                <div class="steps-list">
+                    <div class="step-item">
+                        <h4>Step 1: Get Your Bot Token</h4>
+                        <ol>
+                            <li>Go to <a href="https://discord.com/developers/applications" target="_blank">Discord Developer Portal</a></li>
+                            <li>Select your application (or create a new one)</li>
+                            <li>Click on the <strong>"Bot"</strong> section in the left sidebar</li>
+                            <li>Under "Token", click <strong>"Reset Token"</strong> or <strong>"Copy"</strong> to get your bot token</li>
+                        </ol>
+                    </div>
+
+                    <div class="step-item">
+                        <h4>Step 2: Enable Privileged Intents</h4>
+                        <p>In the same Bot section, scroll down to "Privileged Gateway Intents" and enable ALL three:</p>
+                        <ul>
+                            <li>✅ <strong>Presence Intent</strong></li>
+                            <li>✅ <strong>Server Members Intent</strong></li>
+                            <li>✅ <strong>Message Content Intent</strong></li>
+                        </ul>
+                        <p><strong>Important:</strong> Click <strong>"Save Changes"</strong> at the bottom of the page!</p>
+                    </div>
+
+                    <div class="step-item">
+                        <h4>Step 3: Configure Your Bot Token</h4>
+                        
+                        <div class="token-setup">
+                            <div class="token-input-group">
+                                <label for="token">🔑 Paste your Discord bot token here:</label>
+                                <textarea 
+                                    id="token" 
+                                    placeholder="Your bot token will look like: MTIzNDU2Nzg5MDEyMzQ1Njc4OQ.GhIjKl.MnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWx"
+                                    rows="4"
+                                ></textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveToken()">
+                                <span>💾 Save Token & Start Bot</span>
+                            </button>
+                            <div id="validation-result" class="validation-result"></div>
+                        </div>
+
+                        <div class="alert info" style="margin-top: 1.5rem;">
+                            <div class="alert-icon">ℹ️</div>
+                            <div>
+                                <strong>How it works:</strong> When you click "Save Token", it will be stored in environment variables 
+                                for this session only. It won't be saved to any files, making it safe for GitHub.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <h4>Step 4: Invite Bot to Your Server</h4>
+                        <ol>
+                            <li>In the Developer Portal, go to <strong>"OAuth2"</strong> → <strong>"URL Generator"</strong></li>
+                            <li>Under "Scopes", select: <code>bot</code></li>
+                            <li>Under "Bot Permissions", select these permissions:
+                                <ul>
+                                    <li>✅ Read Messages/View Channels</li>
+                                    <li>✅ Send Messages</li>
+                                    <li>✅ Embed Links</li>
+                                    <li>✅ Read Message History</li>
+                                    <li>✅ Add Reactions</li>
+                                    <li>✅ Use External Emojis</li>
+                                </ul>
+                            </li>
+                            <li>Copy the generated URL at the bottom</li>
+                            <li>Open the URL in your browser to invite your bot to a server</li>
+                        </ol>
+                    </div>
+
+                    <div class="step-item" style="background: rgba(59, 165, 93, 0.1); border-left-color: #3BA55D;">
+                        <h4>✅ You're All Set!</h4>
+                        <p>Once you've completed all the steps above and saved your token, your bot will start automatically!</p>
+                        <p>Use <code>a help</code> in your Discord server to see all available commands.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/status.js"></script>
+    <script src="/static/js/setup.js"></script>
+</body>
+</html>

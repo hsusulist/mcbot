@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Dashboard - Features</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🤖 Discord Bot</h1>
+                <p>Minecraft Quest System</p>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="/" class="nav-link">
+                        <span class="icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="/setup" class="nav-link">
+                        <span class="icon">🔑</span>
+                        <span>Bot Setup</span>
+                        <span class="badge">Important</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Documentation</div>
+                    <a href="/commands" class="nav-link">
+                        <span class="icon">⚡</span>
+                        <span>Commands</span>
+                    </a>
+                    <a href="/quests" class="nav-link">
+                        <span class="icon">📋</span>
+                        <span>Quest System</span>
+                    </a>
+                    <a href="/features" class="nav-link active">
+                        <span class="icon">✨</span>
+                        <span>Features</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Resources</div>
+                    <a href="https://discord.com/developers/applications" target="_blank" class="nav-link">
+                        <span class="icon">🔗</span>
+                        <span>Discord Portal</span>
+                    </a>
+                    <a href="https://discord.gg" target="_blank" class="nav-link">
+                        <span class="icon">💬</span>
+                        <span>Join Discord</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>✨ Bot Features</h1>
+                    <p>Explore all the amazing features</p>
+                </div>
+                <div class="status-badge offline" id="bot-status">
+                    <span class="status-indicator"></span>
+                    <span id="status-text">Bot Offline</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>🎮 Core Features</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📋</div>
+                        <h3>Daily Quest System</h3>
+                        <p><strong>Automatic Quest Assignment:</strong> Every player receives 5 random quests daily</p>
+                        <p><strong>24-Hour Reset:</strong> Quests reset automatically after 24 hours</p>
+                        <p><strong>Progress Tracking:</strong> Real-time quest progress monitoring</p>
+                        <p><strong>Instant Rewards:</strong> Earn coins immediately upon completion</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">💰</div>
+                        <h3>Economy System</h3>
+                        <p><strong>Virtual Currency:</strong> Earn and spend coins throughout the server</p>
+                        <p><strong>Balance Tracking:</strong> Check your balance or others' at any time</p>
+                        <p><strong>Transaction History:</strong> Track total earned and spent</p>
+                        <p><strong>Coin Transfer:</strong> Give coins to other players</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🎰</div>
+                        <h3>Gambling & Mini Games</h3>
+                        <p><strong>Coinflip:</strong> Double or nothing - heads or tails!</p>
+                        <p><strong>Slots:</strong> Match 3 symbols for massive wins</p>
+                        <p><strong>Dice:</strong> Roll high to multiply your bet</p>
+                        <p><strong>Fair Odds:</strong> Balanced gameplay for everyone</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🏆</div>
+                        <h3>Leaderboards</h3>
+                        <p><strong>Top 10 Ranking:</strong> See the richest players</p>
+                        <p><strong>Medal System:</strong> Gold, silver, bronze for top 3</p>
+                        <p><strong>Real-Time Updates:</strong> Rankings update instantly</p>
+                        <p><strong>Competitive Fun:</strong> Encourage player engagement</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">👋</div>
+                        <h3>Welcome System</h3>
+                        <p><strong>Custom Messages:</strong> Welcome new members automatically</p>
+                        <p><strong>Member Counter:</strong> Show join position (#123)</p>
+                        <p><strong>Channel Configuration:</strong> Choose where to send welcomes</p>
+                        <p><strong>Enable/Disable:</strong> Toggle feature on or off</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h3>Player Profiles</h3>
+                        <p><strong>Detailed Stats:</strong> View comprehensive player data</p>
+                        <p><strong>Quest Progress:</strong> See daily quest completion</p>
+                        <p><strong>Earnings Tracker:</strong> Total coins earned</p>
+                        <p><strong>Spending Report:</strong> Total coins spent</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">⚡</div>
+                        <h3>Automatic Tracking</h3>
+                        <p><strong>Message Monitoring:</strong> Track chat activity automatically</p>
+                        <p><strong>Reaction Detection:</strong> Count reactions and emojis</p>
+                        <p><strong>Mention Tracking:</strong> Monitor who you interact with</p>
+                        <p><strong>Channel Diversity:</strong> Track multi-channel participation</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🔧</div>
+                        <h3>Server Configuration</h3>
+                        <p><strong>Minecraft Integration:</strong> Connect your MC server</p>
+                        <p><strong>Console Logging:</strong> Stream server logs to Discord</p>
+                        <p><strong>Admin Controls:</strong> Manage bot settings easily</p>
+                        <p><strong>Multiple Servers:</strong> Separate configs per server</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🎨</div>
+                        <h3>Rich Embeds</h3>
+                        <p><strong>Beautiful Messages:</strong> Colorful, organized displays</p>
+                        <p><strong>Visual Feedback:</strong> Icons and emojis everywhere</p>
+                        <p><strong>Clear Information:</strong> Easy-to-read formats</p>
+                        <p><strong>Professional Look:</strong> Modern Discord design</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">💾</div>
+                        <h3>Data Persistence</h3>
+                        <p><strong>SQLite Database:</strong> Reliable data storage</p>
+                        <p><strong>Automatic Saves:</strong> No data loss</p>
+                        <p><strong>User History:</strong> Permanent record keeping</p>
+                        <p><strong>Quest Progress:</strong> Saves between sessions</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🔒</div>
+                        <h3>Security Features</h3>
+                        <p><strong>Permission Checks:</strong> Admin commands protected</p>
+                        <p><strong>Input Validation:</strong> Prevent invalid data</p>
+                        <p><strong>Anti-Cheat:</strong> Fair play enforcement</p>
+                        <p><strong>Error Handling:</strong> Graceful failure recovery</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">⚙️</div>
+                        <h3>Easy Administration</h3>
+                        <p><strong>Simple Commands:</strong> Intuitive setup process</p>
+                        <p><strong>Add/Remove Coins:</strong> Manual balance adjustment</p>
+                        <p><strong>System Toggles:</strong> Enable/disable features</p>
+                        <p><strong>Status Checks:</strong> Monitor bot configuration</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2>🌟 Quest Variety</h2>
+                <p>With over 20 different quest types, players will never get bored! Quests include:</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">💬</div>
+                        <h3>Social Quests</h3>
+                        <p>Chat activity, greetings, mentions, reactions, and positive messages</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🎮</div>
+                        <h3>Gaming Quests</h3>
+                        <p>Minecraft-themed quests like building, mining, fighting, and trading</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🕐</div>
+                        <h3>Time-Based Quests</h3>
+                        <p>Early bird and night owl quests for different playstyles</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📝</div>
+                        <h3>Content Quests</h3>
+                        <p>Long messages, emojis, questions, links, and more</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/status.js"></script>
+</body>
+</html>

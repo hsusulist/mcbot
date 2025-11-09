@@ -7,8 +7,16 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 - `bot.py` - Main bot file with all commands and event handlers
 - `database.py` - SQLite database manager for users, quests, and settings
 - `quests.py` - Quest pool with 40 unique daily quests
-- `web_server.py` - Simple HTTP server for web interface
-- `web/` - Web interface (HTML/CSS/JS) for bot setup and help
+- `web_server.py` - Flask web server with API endpoints for token management
+- `web/` - Modern web dashboard with multiple pages
+  - `index.html` - Home page with feature overview
+  - `setup.html` - Secure token configuration page
+  - `commands.html` - Complete command documentation
+  - `quests.html` - Quest system documentation with all 20+ quest types
+  - `features.html` - Detailed feature descriptions
+  - `static/css/style.css` - Modern responsive styling
+  - `static/js/status.js` - Real-time bot status checker
+  - `static/js/setup.js` - Token validation and saving logic
 - `minecraft_bot.db` - SQLite database (auto-created on first run)
 
 ## Key Features
@@ -59,6 +67,19 @@ A comprehensive Discord bot for Minecraft servers featuring an economy system, d
 4. Database auto-initializes on first run
 
 ## Recent Changes
+- 2025-11-09: Major Website Redesign & Secure Token Management
+  - Completely redesigned website with modern UI and sidebar navigation
+  - Added 5 main pages: Home, Bot Setup, Commands, Quest System, Features
+  - Implemented Flask backend with API endpoints for token management
+  - Token now stored in environment variables only (never in files - GitHub safe!)
+  - Beautiful gradient design with purple theme
+  - Responsive sidebar with organized navigation sections
+  - Real-time bot status indicator on all pages
+  - Interactive token validation and setup flow
+  - Comprehensive documentation for all commands and features
+  - Grid-based layouts for features, commands, and quest cards
+  - Animated UI elements and hover effects
+  
 - 2025-11-09: Web Interface & Toggle Commands
   - Created web interface for bot token setup (no file saving for GitHub safety)
   - Added help page with Minecraft mod integration guide

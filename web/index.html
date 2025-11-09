@@ -2,98 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Bot Setup</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Dashboard - Home</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <nav>
-        <div class="nav-container">
-            <h1>🤖 Minecraft Discord Bot</h1>
-            <div class="nav-links">
-                <a href="index.html" class="active">Bot Token</a>
-                <a href="help.html">Help</a>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🤖 Discord Bot</h1>
+                <p>Minecraft Quest System</p>
             </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="card">
-            <h2>🔑 Discord Bot Token Setup</h2>
-            <p class="warning">⚠️ <strong>Important:</strong> Never save your bot token in code files! Use Replit Secrets instead.</p>
-            
-            <div class="step">
-                <h3>Step 1: Get Your Bot Token</h3>
-                <ol>
-                    <li>Go to <a href="https://discord.com/developers/applications" target="_blank">Discord Developer Portal</a></li>
-                    <li>Select your application (or create a new one)</li>
-                    <li>Click on the <strong>"Bot"</strong> section</li>
-                    <li>Under "Token", click <strong>"Reset Token"</strong> or <strong>"Copy"</strong></li>
-                </ol>
-            </div>
-
-            <div class="step">
-                <h3>Step 2: Enable Privileged Intents</h3>
-                <p>In the same Bot section, scroll down to "Privileged Gateway Intents" and enable:</p>
-                <ul>
-                    <li>✅ <strong>Presence Intent</strong></li>
-                    <li>✅ <strong>Server Members Intent</strong></li>
-                    <li>✅ <strong>Message Content Intent</strong></li>
-                </ul>
-                <p>Click <strong>"Save Changes"</strong></p>
-            </div>
-
-            <div class="step">
-                <h3>Step 3: Add Token to Replit Secrets</h3>
-                <div class="token-input">
-                    <label for="token">Paste your token here to validate it:</label>
-                    <textarea id="token" placeholder="Paste your Discord bot token here..."></textarea>
-                    <button onclick="validateToken()">Validate Token</button>
-                    <div id="validation-result"></div>
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="/" class="nav-link active">
+                        <span class="icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="/setup" class="nav-link">
+                        <span class="icon">🔑</span>
+                        <span>Bot Setup</span>
+                        <span class="badge">Important</span>
+                    </a>
                 </div>
                 
-                <div class="instructions">
-                    <h4>How to add to Replit Secrets:</h4>
-                    <ol>
-                        <li>Click the <strong>lock icon 🔒</strong> in the left sidebar (Tools)</li>
-                        <li>Click <strong>"Secrets"</strong></li>
-                        <li>Add a new secret:
-                            <ul>
-                                <li><strong>Key:</strong> <code>DISCORD_BOT_TOKEN</code></li>
-                                <li><strong>Value:</strong> Your bot token</li>
-                            </ul>
-                        </li>
-                        <li>Click <strong>"Add secret"</strong></li>
-                    </ol>
+                <div class="nav-section">
+                    <div class="nav-section-title">Documentation</div>
+                    <a href="/commands" class="nav-link">
+                        <span class="icon">⚡</span>
+                        <span>Commands</span>
+                    </a>
+                    <a href="/quests" class="nav-link">
+                        <span class="icon">📋</span>
+                        <span>Quest System</span>
+                    </a>
+                    <a href="/features" class="nav-link">
+                        <span class="icon">✨</span>
+                        <span>Features</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Resources</div>
+                    <a href="https://discord.com/developers/applications" target="_blank" class="nav-link">
+                        <span class="icon">🔗</span>
+                        <span>Discord Portal</span>
+                    </a>
+                    <a href="https://discord.gg" target="_blank" class="nav-link">
+                        <span class="icon">💬</span>
+                        <span>Join Discord</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>Welcome to Your Discord Bot</h1>
+                    <p>Manage and configure your Minecraft Discord bot</p>
+                </div>
+                <div class="status-badge offline" id="bot-status">
+                    <span class="status-indicator"></span>
+                    <span id="status-text">Bot Offline</span>
                 </div>
             </div>
 
-            <div class="step">
-                <h3>Step 4: Invite Bot to Your Server</h3>
-                <ol>
-                    <li>In the Developer Portal, go to <strong>"OAuth2"</strong> → <strong>"URL Generator"</strong></li>
-                    <li>Select scopes: <code>bot</code></li>
-                    <li>Select permissions: 
-                        <ul>
-                            <li>Read Messages/View Channels</li>
-                            <li>Send Messages</li>
-                            <li>Embed Links</li>
-                            <li>Read Message History</li>
-                            <li>Add Reactions</li>
-                        </ul>
-                    </li>
-                    <li>Copy the generated URL and open it to invite your bot</li>
-                </ol>
+            <div class="content-card">
+                <h2>🎮 Getting Started</h2>
+                <p>Welcome to your Minecraft Discord Bot dashboard! This bot provides a complete quest and economy system for your Discord server.</p>
+                
+                <div class="alert warning">
+                    <div class="alert-icon">⚠️</div>
+                    <div>
+                        <strong>Action Required:</strong> You need to set up your Discord bot token to get started. 
+                        Click on the "Bot Setup" link in the sidebar to configure your bot.
+                    </div>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📋</div>
+                        <h3>Daily Quests</h3>
+                        <p>Players receive 5 random daily quests that reset every 24 hours, keeping gameplay fresh and engaging.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">💰</div>
+                        <h3>Economy System</h3>
+                        <p>Complete quest system with virtual currency, balance tracking, and leaderboards.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🎰</div>
+                        <h3>Mini Games</h3>
+                        <p>Coinflip gambling, slots, and other games to spend and earn coins.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">👋</div>
+                        <h3>Welcome System</h3>
+                        <p>Customizable welcome messages for new members joining your server.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🏆</div>
+                        <h3>Leaderboards</h3>
+                        <p>Track the richest players and create competition in your community.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">⚙️</div>
+                        <h3>Easy Setup</h3>
+                        <p>Simple admin commands to configure your bot and customize settings.</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="step success">
-                <h3>✅ All Done!</h3>
-                <p>Once you've added the token to Secrets and enabled the intents, your bot is ready to run!</p>
-                <p>Use <code>a help</code> in Discord to see all commands.</p>
+            <div class="content-card">
+                <h2>📊 Quick Stats</h2>
+                <p>Your bot provides comprehensive tracking and statistics for player engagement.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📈</div>
+                        <h3>Total Earned</h3>
+                        <p>Track all coins earned by players through quests and activities.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📉</div>
+                        <h3>Total Spent</h3>
+                        <p>Monitor spending on games and other features.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">✅</div>
+                        <h3>Quest Completion</h3>
+                        <p>See how many daily quests players complete each day.</p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="/static/js/status.js"></script>
 </body>
 </html>
