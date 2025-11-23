@@ -1,0 +1,18 @@
+{
+  "name": "mcbot",
+  "version": "0.1.0",
+  "description": "Node wrapper to serve website and optionally start a Discord bot",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon --watch src --exec node src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

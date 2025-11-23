@@ -16,12 +16,50 @@ intents.message_content = True
 intents.members = True
 intents.reactions = True
 
-bot = commands.Bot(command_prefix='a ', intents=intents, help_command=None)
+bot = commands.Bot(command_prefix='ast ', intents=intents, help_command=None)
 db = Database()
 
 user_mentions_tracker = {}
 user_message_times = {}
 user_channels_tracker = {}
+blackjack_games = {}
+
+
+def create_deck():
+    suits = ['♠️', '♥️', '♦️', '♣️']
+    ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+    deck = [f"{r}{s}" for s in suits for r in ranks]
+    random.shuffle(deck)
+    return deck
+
+
+def hand_value(hand):
+    # Calculate blackjack value with Ace as 1 or 11
+    vals = []
+    for card in hand:
+        rank = card[:-2] if card.endswith('\uFE0F') else card[:-2] if len(card) > 2 else card[0]
+        # rank extraction: card like 'A♠️' or '10♦️'
+        if card.startswith('10'):
+            rank = '10'
+        else:
+            rank = card[:-2] if len(card) > 2 else card[0]
+        if rank in ['J','Q','K']:
+            vals.append(10)
+        elif rank == 'A':
+            vals.append(11)
+        else:
+            try:
+                vals.append(int(rank))
+            except Exception:
+                vals.append(0)
+
+    total = sum(vals)
+    # reduce Aces from 11 to 1 while bust
+    aces = sum(1 for v, c in zip(vals, hand) if (c.startswith('A')) )
+    while total > 21 and aces > 0:
+        total -= 10
+        aces -= 1
+    return total
 
 async def update_quest(user_id, username, quest_id, increment=1, channel=None):
     """Helper function to update quest progress and handle completion"""
@@ -101,7 +139,7 @@ async def on_member_join(member):
     )
     embed.add_field(
         name="🎮 Get Started",
-        value=f"Use `a help` to see all available commands and start your adventure!",
+        value=f"Use `ast help` to see all available commands and start your adventure!",
         inline=False
     )
     embed.set_footer(text=f"Welcome to {member.guild.name}!", icon_url=member.guild.icon.url if member.guild.icon else None)
@@ -372,22 +410,22 @@ async def setup(ctx, server_ip: str, server_port: int):
     
     await ctx.send(embed=embed)
 
-@bot.command(name='setupchannel')
+
+@bot.command(name='status')
 @commands.has_permissions(administrator=True)
-async def setupchannel(ctx, channel: discord.TextChannel = None):
-    """📺 Setup console channel for server logs (Admin only)"""
-    if channel is None:
-        channel = ctx.channel
-    
-    db.set_server_settings(ctx.guild.id, console_channel_id=channel.id)
-    
+async def status_cmd(ctx, action: str = None):
+    """🔧 Set the current channel as the console channel (Admin only)
+
+    Usage: `ast status` — sets this channel as the console channel.
+    """
+    # If admin uses `ast status` we'll set this channel as console channel
+    db.set_server_settings(ctx.guild.id, console_channel_id=ctx.channel.id)
     embed = discord.Embed(
-        title="✅ Console Channel Configured!",
-        description=f"Server console will output to {channel.mention}",
+        title="✅ Console Channel Set",
+        description=f"This channel will now receive console output: {ctx.channel.mention}",
         color=discord.Color.green()
     )
     embed.set_footer(text=f"Set by {ctx.author}")
-    
     await ctx.send(embed=embed)
 
 @bot.command(name='welcome')
@@ -442,7 +480,7 @@ async def welcome_cmd(ctx, action: str = None, channel: discord.TextChannel = No
         settings = db.get_server_settings(ctx.guild.id)
         
         if not settings:
-            await ctx.send("❌ Server not configured! Ask an admin to use `a welcome #channel`")
+            await ctx.send("❌ Server not configured! Ask an admin to use `ast welcome #channel`")
             return
         
         welcome_enabled = settings[6] if len(settings) > 6 else 1
@@ -498,7 +536,7 @@ async def console_cmd(ctx, action: str = "status"):
         settings = db.get_server_settings(ctx.guild.id)
         
         if not settings:
-            await ctx.send("❌ Server not configured! Ask an admin to use `a setupchannel`")
+            await ctx.send("❌ Server not configured! Ask an admin to use `ast status`")
             return
         
         console_enabled = settings[5] if len(settings) > 5 else 1
@@ -729,7 +767,12 @@ async def coinflip(ctx, amount: str, choice: str):
 
 @bot.command(name='gamble', aliases=['slots', 'slot'])
 async def gamble(ctx, amount: str):
-    """🎰 Gamble with slot machine - 1/100 chance for x100! Use 'all' to bet everything!"""
+    """🎰 Gamble with slot machine. Probabilities:
+    - 1/200 => x100
+    - 1/75  => x50
+    - 1/25  => x10
+    Use 'all' to bet everything!
+    """
     user_id = ctx.author.id
     username = str(ctx.author)
     db.get_user(user_id, username)
@@ -755,57 +798,37 @@ async def gamble(ctx, amount: str):
         return
     
     await update_quest(user_id, username, 17, 1, ctx.channel)
-    
-    roll = random.randint(1, 100)
-    
+
+    r = random.random()
     emojis = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "7️⃣"]
     slots = [random.choice(emojis) for _ in range(3)]
-    
-    if roll == 1:
+
+    # Probabilities checked in order from rarest to most common
+    if r < 1/200:
         winnings = amount * 100
         db.update_balance(user_id, winnings)
         new_balance = db.get_balance(user_id)
-        
-        embed = discord.Embed(
-            title="🎰 JACKPOT! 💰",
-            description=f"{' '.join(['💎', '💎', '💎'])}\n\n**YOU HIT THE JACKPOT!**",
-            color=discord.Color.gold()
-        )
+        embed = discord.Embed(title="🎰 JACKPOT! 💰", description=f"{' '.join(['💎','💎','💎'])}\n\n**YOU HIT THE JACKPOT!**", color=discord.Color.gold())
         embed.add_field(name="🎉 Winnings", value=f"+{winnings:,} coins (x100!)", inline=True)
         embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
-    elif roll <= 10:
-        winnings = amount * 5
+    elif r < 1/75:
+        winnings = amount * 50
         db.update_balance(user_id, winnings)
         new_balance = db.get_balance(user_id)
-        
-        embed = discord.Embed(
-            title="🎰 Big Win!",
-            description=f"{' '.join(slots)}\n\nYou won big!",
-            color=discord.Color.green()
-        )
-        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x5!)", inline=True)
+        embed = discord.Embed(title="🎰 MASSIVE WIN! 💥", description=f"{' '.join(slots)}\n\nAmazing!", color=discord.Color.green())
+        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x50!)", inline=True)
         embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
-    elif roll <= 30:
-        winnings = amount * 2
+    elif r < 1/25:
+        winnings = amount * 10
         db.update_balance(user_id, winnings)
         new_balance = db.get_balance(user_id)
-        
-        embed = discord.Embed(
-            title="🎰 You Won!",
-            description=f"{' '.join(slots)}\n\nNice!",
-            color=discord.Color.blue()
-        )
-        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x2!)", inline=True)
+        embed = discord.Embed(title="🎰 Nice Win! 🎉", description=f"{' '.join(slots)}\n\nWell played!", color=discord.Color.blue())
+        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x10!)", inline=True)
         embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
     else:
         db.update_balance(user_id, -amount)
         new_balance = db.get_balance(user_id)
-        
-        embed = discord.Embed(
-            title="🎰 You Lost!",
-            description=f"{' '.join(slots)}\n\nBetter luck next time!",
-            color=discord.Color.red()
-        )
+        embed = discord.Embed(title="🎰 You Lost!", description=f"{' '.join(slots)}\n\nBetter luck next time!", color=discord.Color.red())
         embed.add_field(name="💸 Lost", value=f"-{amount:,} coins", inline=True)
         embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
     
@@ -813,60 +836,141 @@ async def gamble(ctx, amount: str):
     
     await ctx.send(embed=embed)
 
+
+@bot.command(name='blackjack', aliases=['bj'])
+async def blackjack(ctx):
+    """🃏 Start a simple Blackjack game. Use `ast hit` to draw, `ast stand` to stop."""
+    user_id = ctx.author.id
+    deck = create_deck()
+    player = [deck.pop(), deck.pop()]
+    dealer = [deck.pop(), deck.pop()]
+    blackjack_games[user_id] = {'deck': deck, 'player': player, 'dealer': dealer}
+
+    p_val = hand_value(player)
+    d_visible = dealer[0]
+
+    embed = discord.Embed(title="🃏 Blackjack", description=f"Your hand: {' '.join(player)} ({p_val})\nDealer shows: {d_visible}", color=discord.Color.purple())
+    embed.set_footer(text="Use `ast hit` to draw or `ast stand` to finish.")
+    await ctx.send(embed=embed)
+
+
+@bot.command(name='hit')
+async def blackjack_hit(ctx):
+    user_id = ctx.author.id
+    game = blackjack_games.get(user_id)
+    if not game:
+        await ctx.send("❌ You don't have an active blackjack game. Start one with `ast blackjack`.")
+        return
+    deck = game['deck']
+    player = game['player']
+    player.append(deck.pop())
+    p_val = hand_value(player)
+    if p_val > 21:
+        await ctx.send(f"💥 Busted! Your hand: {' '.join(player)} ({p_val}). Game over.")
+        del blackjack_games[user_id]
+    else:
+        await ctx.send(f"🃏 Your hand: {' '.join(player)} ({p_val}). Use `ast hit` or `ast stand`.")
+
+
+@bot.command(name='stand')
+async def blackjack_stand(ctx):
+    user_id = ctx.author.id
+    game = blackjack_games.get(user_id)
+    if not game:
+        await ctx.send("❌ You don't have an active blackjack game. Start one with `ast blackjack`.")
+        return
+    deck = game['deck']
+    player = game['player']
+    dealer = game['dealer']
+
+    # Dealer draws until 17+
+    while hand_value(dealer) < 17:
+        dealer.append(deck.pop())
+
+    p_val = hand_value(player)
+    d_val = hand_value(dealer)
+
+    result = None
+    if d_val > 21 or p_val > d_val:
+        result = 'win'
+    elif p_val == d_val:
+        result = 'push'
+    else:
+        result = 'lose'
+
+    if result == 'win':
+        msg = f"🎉 You win! Your {p_val} vs Dealer {d_val}."
+    elif result == 'push':
+        msg = f"🤝 Push. Your {p_val} vs Dealer {d_val}."
+    else:
+        msg = f"😢 You lose. Your {p_val} vs Dealer {d_val}."
+
+    embed = discord.Embed(title="🃏 Blackjack Result", description=f"Your hand: {' '.join(player)} ({p_val})\nDealer hand: {' '.join(dealer)} ({d_val})\n\n{msg}", color=discord.Color.blue())
+    await ctx.send(embed=embed)
+    del blackjack_games[user_id]
+
 @bot.command(name='help')
 async def help_command(ctx):
     """🆘 Shows all available commands"""
     await update_quest(ctx.author.id, str(ctx.author), 15, 1, ctx.channel)
-    
+    prefix = 'ast '
+    is_admin = False
+    try:
+        is_admin = ctx.author.guild_permissions.administrator
+    except Exception:
+        is_admin = False
+
     embed = discord.Embed(
         title="🤖 Minecraft Server Bot - Help",
-        description="Here are all my commands! Use `a` as the prefix.",
+        description=f"Here are all my commands! Use `{prefix}` as the prefix.",
         color=discord.Color.purple()
     )
-    
-    embed.add_field(
-        name="⚙️ Admin Commands",
-        value="`a setup <ip> <port>` - Setup Minecraft server\n"
-              "`a setupchannel [#channel]` - Set console channel\n"
-              "`a welcome [#channel]` - Set welcome channel\n"
-              "`a welcome on/off/status` - Toggle welcome system\n"
-              "`a console on/off/status` - Toggle console logging\n"
-              "`a give @user <amount>` - Give coins to user",
-        inline=False
-    )
-    
+
+    # Economy
     embed.add_field(
         name="💰 Economy Commands",
-        value="`a balance [@user]` - Check balance\n"
-              "`a profile [@user]` - View profile\n"
-              "`a leaderboard` - Top 10 richest",
+        value=(f"`{prefix}balance [@user]` - Check balance\n"
+               f"`{prefix}profile [@user]` - View profile\n"
+               f"`{prefix}leaderboard` - Top 10 richest\n"
+               f"`{prefix}exchange <amount>` - Exchange Discord coins for in-game (1000→1)"),
         inline=False
     )
-    
+
+    # Quests
     embed.add_field(
         name="📋 Quest Commands",
-        value="`a quests` - View daily quests\n"
-              "`a daily` - Same as quests",
+        value=f"`{prefix}quests` - View daily quests\n`{prefix}daily` - Same as quests",
         inline=False
     )
-    
+
+    # Games
     embed.add_field(
-        name="🎰 Gambling Commands",
-        value="`a cf <amount> <heads/tails>` - Coinflip (2x)\n"
-              "`a gamble <amount>` - Slot machine (up to 100x!)",
+        name="🎰 Games",
+        value=(f"`{prefix}cf <amount> <heads/tails>` - Coinflip\n"
+               f"`{prefix}gamble <amount>` - Slot machine\n"
+               f"`{prefix}blackjack` - Play blackjack (then `hit` / `stand`)"),
         inline=False
     )
-    
+
+    # Admin section only for admins
+    if is_admin:
+        embed.add_field(
+            name="⚙️ Admin Commands",
+            value=(f"`{prefix}setup <ip> <port>` - Setup Minecraft server\n"
+                   f"`{prefix}status` - Set this channel as console channel\n"
+                   f"`{prefix}welcome [on/off/status] [#channel]` - Manage welcome system\n"
+                   f"`{prefix}console on/off/status` - Toggle console logging\n"
+                   f"`{prefix}give @user <amount>` - Give coins to user"),
+            inline=False
+        )
+
     embed.add_field(
-        name="ℹ️ Info Commands",
-        value="`a help` - Shows this message\n"
-              "`a ping` - Check bot latency\n"
-              "`a serverinfo` - View server info",
+        name="ℹ️ Info",
+        value=f"`{prefix}help` - Shows this message\n`{prefix}ping` - Check bot latency\n`{prefix}serverinfo` - View server info",
         inline=False
     )
-    
+
     embed.set_footer(text="💡 Tip: Complete daily quests to earn coins!")
-    
     await ctx.send(embed=embed)
 
 @bot.command(name='ping')
@@ -887,7 +991,7 @@ async def serverinfo(ctx):
     settings = db.get_server_settings(ctx.guild.id)
     
     if not settings:
-        await ctx.send("❌ Server not configured! Ask an admin to use `a setup`")
+        await ctx.send("❌ Server not configured! Ask an admin to use `ast setup`")
         return
     
     _, server_ip, server_port, console_channel_id, welcome_channel_id = settings
@@ -939,13 +1043,59 @@ async def give(ctx, member: discord.Member, amount: int):
     
     await ctx.send(embed=embed)
 
+
+@bot.command(name='exchange')
+async def exchange(ctx, amount: int):
+    """🔁 Exchange Discord coins for in-game money (1000 Discord = 1 Minecraft)
+
+    Example: `ast exchange 1000` will deduct 1000 Discord coins and request 1 in-game coin via console channel.
+    """
+    user_id = ctx.author.id
+    username = str(ctx.author)
+    db.get_user(user_id, username)
+
+    if amount <= 0:
+        await ctx.send("❌ Amount must be positive!")
+        return
+
+    user_balance = db.get_balance(user_id)
+    if user_balance < amount:
+        await ctx.send(f"❌ You don't have enough coins! Your balance: {user_balance:,} coins")
+        return
+
+    mc_amount = amount // 1000
+    if mc_amount <= 0:
+        await ctx.send("❌ Minimum exchange rate is 1000 Discord coins = 1 Minecraft coin.")
+        return
+
+    # Deduct discord coins
+    db.update_balance(user_id, -amount)
+
+    # Notify via console channel if configured
+    settings = db.get_server_settings(ctx.guild.id)
+    console_channel_id = settings[3] if settings and len(settings) > 3 else None
+
+    if console_channel_id:
+        channel = ctx.guild.get_channel(console_channel_id)
+        if channel:
+            # Send a clear exchange message that admins / server-side bridge can act on
+            await channel.send(f"[EXCHANGE] {username} (<@{user_id}>) exchanged {amount:,} coins for {mc_amount} in-game coin(s)")
+
+    embed = discord.Embed(
+        title="🔁 Exchange Complete",
+        description=f"You exchanged **{amount:,}** coins for **{mc_amount}** in-game coin(s).",
+        color=discord.Color.green()
+    )
+    embed.set_footer(text=f"Requested by {ctx.author}")
+    await ctx.send(embed=embed)
+
 # Slash Commands
 @bot.tree.command(name="help", description="View all available commands")
 async def slash_help(interaction: discord.Interaction):
     """View all available commands"""
     embed = discord.Embed(
         title="🤖 Bot Commands",
-        description="Here are all available commands. You can use prefix `a ` or slash `/` commands!",
+        description="Here are all available commands. You can use prefix `ast ` or slash `/` commands!",
         color=discord.Color.blue()
     )
     
@@ -969,7 +1119,7 @@ async def slash_help(interaction: discord.Interaction):
     
     embed.add_field(
         name="⚙️ Admin",
-        value="`/setup` - Configure Minecraft server\n`/setupchannel` - Set console channel\n`/welcome` - Configure welcome system\n`/console` - Manage console logging\n`/settings` - View server settings",
+        value="`/setup` - Configure Minecraft server\n`/welcome` - Configure welcome system\n`/console` - Manage console logging\n`/settings` - View server settings",
         inline=False
     )
     
@@ -1211,56 +1361,36 @@ async def slash_slots(interaction: discord.Interaction, amount: str):
         return
     
     await update_quest(user_id, username, 17, 1, interaction.channel)
-    
-    roll = random.randint(1, 100)
+
+    r = random.random()
     emojis = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "7️⃣"]
     slots = [random.choice(emojis) for _ in range(3)]
-    
-    if roll == 1:
+
+    if r < 1/200:
         winnings = bet_amount * 100
         db.update_balance(user_id, winnings)
         new_balance = db.get_balance(user_id)
-        
-        embed = discord.Embed(
-            title="🎰 JACKPOT! 💰",
-            description=f"{' '.join(['💎', '💎', '💎'])}\n\n**YOU HIT THE JACKPOT!**",
-            color=discord.Color.gold()
-        )
+        embed = discord.Embed(title="🎰 JACKPOT! 💰", description=f"{' '.join(['💎','💎','💎'])}\n\n**YOU HIT THE JACKPOT!**", color=discord.Color.gold())
         embed.add_field(name="🎉 Winnings", value=f"+{winnings:,} coins (x100!)", inline=True)
         embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
-    elif roll <= 10:
-        winnings = bet_amount * 5
+    elif r < 1/75:
+        winnings = bet_amount * 50
         db.update_balance(user_id, winnings)
         new_balance = db.get_balance(user_id)
-        
-        embed = discord.Embed(
-            title="🎰 Big Win!",
-            description=f"{' '.join(slots)}\n\nYou won big!",
-            color=discord.Color.green()
-        )
-        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x5!)", inline=True)
+        embed = discord.Embed(title="🎰 MASSIVE WIN! 💥", description=f"{' '.join(slots)}\n\nAmazing!", color=discord.Color.green())
+        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x50!)", inline=True)
         embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
-    elif roll <= 30:
-        winnings = bet_amount * 2
+    elif r < 1/25:
+        winnings = bet_amount * 10
         db.update_balance(user_id, winnings)
         new_balance = db.get_balance(user_id)
-        
-        embed = discord.Embed(
-            title="🎰 You Won!",
-            description=f"{' '.join(slots)}\n\nNice!",
-            color=discord.Color.blue()
-        )
-        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x2!)", inline=True)
+        embed = discord.Embed(title="🎰 Nice Win! 🎉", description=f"{' '.join(slots)}\n\nWell played!", color=discord.Color.blue())
+        embed.add_field(name="💰 Winnings", value=f"+{winnings:,} coins (x10!)", inline=True)
         embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
     else:
         db.update_balance(user_id, -bet_amount)
         new_balance = db.get_balance(user_id)
-        
-        embed = discord.Embed(
-            title="🎰 You Lost!",
-            description=f"{' '.join(slots)}\n\nBetter luck next time!",
-            color=discord.Color.red()
-        )
+        embed = discord.Embed(title="🎰 You Lost!", description=f"{' '.join(slots)}\n\nBetter luck next time!", color=discord.Color.red())
         embed.add_field(name="💸 Lost", value=f"-{bet_amount:,} coins", inline=True)
         embed.add_field(name="💳 New Balance", value=f"{new_balance:,} coins", inline=True)
     
@@ -1385,14 +1515,14 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(
             title="❌ Missing Argument",
-            description=f"Missing required argument: `{error.param.name}`\nUse `a help` for command info.",
+            description=f"Missing required argument: `{error.param.name}`\nUse `ast help` for command info.",
             color=discord.Color.red()
         )
         await ctx.send(embed=embed)
     elif isinstance(error, commands.BadArgument):
         embed = discord.Embed(
             title="❌ Invalid Argument",
-            description="Please check your command arguments!\nUse `a help` for command info.",
+            description="Please check your command arguments!\nUse `ast help` for command info.",
             color=discord.Color.red()
         )
         await ctx.send(embed=embed)

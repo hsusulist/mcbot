@@ -73,15 +73,15 @@
                 <h2>💰 Economy Commands</h2>
                 <div class="command-grid">
                     <div class="command-card">
-                        <code>a balance [@user]</code>
+                        <code>ast balance [@user]</code>
                         <p>Check your balance or someone else's. Aliases: <code>bal</code>, <code>money</code></p>
                     </div>
                     <div class="command-card">
-                        <code>a profile [@user]</code>
+                        <code>ast profile [@user]</code>
                         <p>View detailed profile with total earned, spent, and quest completion stats. Aliases: <code>stats</code>, <code>me</code></p>
                     </div>
                     <div class="command-card">
-                        <code>a leaderboard</code>
+                        <code>ast leaderboard</code>
                         <p>View the top 10 richest players on the server. Aliases: <code>lb</code>, <code>top</code></p>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                 <h2>📋 Quest Commands</h2>
                 <div class="command-grid">
                     <div class="command-card">
-                        <code>a quests</code>
+                        <code>ast quests</code>
                         <p>View your 5 daily quests with progress and rewards. Aliases: <code>quest</code>, <code>daily</code></p>
                     </div>
                 </div>
@@ -101,19 +101,19 @@
                 <h2>🎰 Game Commands</h2>
                 <div class="command-grid">
                     <div class="command-card">
-                        <code>a cf &lt;amount&gt; &lt;heads/tails&gt;</code>
+                        <code>ast cf &lt;amount&gt; &lt;heads/tails&gt;</code>
                         <p>Coinflip gambling - double your bet or lose it all! Aliases: <code>coinflip</code>, <code>flip</code></p>
-                        <p><strong>Example:</strong> <code>a cf 100 heads</code></p>
+                        <p><strong>Example:</strong> <code>ast cf 100 heads</code></p>
                     </div>
                     <div class="command-card">
-                        <code>a slots &lt;amount&gt;</code>
+                        <code>ast slots &lt;amount&gt;</code>
                         <p>Spin the slot machine! Match 3 symbols to win big. Aliases: <code>slot</code>, <code>spin</code></p>
-                        <p><strong>Example:</strong> <code>a slots 50</code></p>
+                        <p><strong>Example:</strong> <code>ast slots 50</code></p>
                     </div>
                     <div class="command-card">
-                        <code>a dice &lt;amount&gt;</code>
+                        <code>ast dice &lt;amount&gt;</code>
                         <p>Roll a dice (1-6). Roll 5 or 6 to win 2x your bet!</p>
-                        <p><strong>Example:</strong> <code>a dice 75</code></p>
+                        <p><strong>Example:</strong> <code>ast dice 75</code></p>
                     </div>
                 </div>
             </div>
@@ -122,9 +122,9 @@
                 <h2>🎁 Give & Trade Commands</h2>
                 <div class="command-grid">
                     <div class="command-card">
-                        <code>a give @user &lt;amount&gt;</code>
+                        <code>ast give @user &lt;amount&gt;</code>
                         <p>Give coins to another player. Spread the wealth!</p>
-                        <p><strong>Example:</strong> <code>a give @Friend 200</code></p>
+                        <p><strong>Example:</strong> <code>ast give @Friend 200</code></p>
                     </div>
                 </div>
             </div>
@@ -139,41 +139,37 @@
                 </div>
                 <div class="command-grid">
                     <div class="command-card">
-                        <code>a setup &lt;server_ip&gt; &lt;port&gt;</code>
+                        <code>ast setup &lt;server_ip&gt; &lt;port&gt;</code>
                         <p>Configure Minecraft server IP and port for your Discord server.</p>
-                        <p><strong>Example:</strong> <code>a setup play.example.com 25565</code></p>
+                        <p><strong>Example:</strong> <code>ast setup play.example.com 25565</code></p>
                     </div>
+                    
                     <div class="command-card">
-                        <code>a setupchannel [#channel]</code>
-                        <p>Set up console channel for server logs. Uses current channel if none specified.</p>
-                        <p><strong>Example:</strong> <code>a setupchannel #console</code></p>
-                    </div>
-                    <div class="command-card">
-                        <code>a welcome [on/off/status] [#channel]</code>
+                        <code>ast welcome [on/off/status] [#channel]</code>
                         <p>Manage welcome system. Configure channel and enable/disable welcome messages.</p>
                         <p><strong>Examples:</strong></p>
-                        <p><code>a welcome #welcome</code> - Set welcome channel</p>
-                        <p><code>a welcome on</code> - Enable welcome messages</p>
-                        <p><code>a welcome off</code> - Disable welcome messages</p>
-                        <p><code>a welcome status</code> - Check current status</p>
+                        <p><code>ast welcome #welcome</code> - Set welcome channel</p>
+                        <p><code>ast welcome on</code> - Enable welcome messages</p>
+                        <p><code>ast welcome off</code> - Disable welcome messages</p>
+                        <p><code>ast welcome status</code> - Check current status</p>
                     </div>
                     <div class="command-card">
-                        <code>a console [on/off/status]</code>
+                        <code>ast console [on/off/status]</code>
                         <p>Manage console logging to Discord.</p>
                         <p><strong>Examples:</strong></p>
-                        <p><code>a console on</code> - Enable console logging</p>
-                        <p><code>a console off</code> - Disable console logging</p>
-                        <p><code>a console status</code> - Check current status</p>
+                        <p><code>ast console on</code> - Enable console logging</p>
+                        <p><code>ast console off</code> - Disable console logging</p>
+                        <p><code>ast console status</code> - Check current status</p>
                     </div>
                     <div class="command-card">
-                        <code>a addmoney @user &lt;amount&gt;</code>
+                        <code>ast addmoney @user &lt;amount&gt;</code>
                         <p>Add coins to a user's balance (admin only).</p>
-                        <p><strong>Example:</strong> <code>a addmoney @Player 1000</code></p>
+                        <p><strong>Example:</strong> <code>ast addmoney @Player 1000</code></p>
                     </div>
                     <div class="command-card">
-                        <code>a removemoney @user &lt;amount&gt;</code>
+                        <code>ast removemoney @user &lt;amount&gt;</code>
                         <p>Remove coins from a user's balance (admin only).</p>
-                        <p><strong>Example:</strong> <code>a removemoney @Player 500</code></p>
+                        <p><strong>Example:</strong> <code>ast removemoney @Player 500</code></p>
                     </div>
                 </div>
             </div>
@@ -182,7 +178,7 @@
                 <h2>ℹ️ Info Commands</h2>
                 <div class="command-grid">
                     <div class="command-card">
-                        <code>a help</code>
+                        <code>ast help</code>
                         <p>Display all available commands with descriptions.</p>
                     </div>
                 </div>

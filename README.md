@@ -39,6 +39,7 @@ A feature-rich Discord bot for Minecraft servers with economy, quests, and gambl
 ### Admin Commands (Requires Administrator permission)
 - `a setup <ip> <port>` - Configure Minecraft server
 - `a setupchannel [#channel]` - Set console channel
+ - `ast status` - Set current channel as console channel
 - `a give @user <amount>` - Give coins to user
 
 ### Economy Commands

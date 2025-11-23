@@ -1,8 +1,10 @@
 async function saveToken() {
     const tokenInput = document.getElementById('token');
+    const setupKeyInput = document.getElementById('setupKey');
     const resultDiv = document.getElementById('validation-result');
     const token = tokenInput.value.trim();
     const button = document.querySelector('.btn-primary');
+    const setupKey = setupKeyInput ? setupKeyInput.value.trim() : '';
     
     if (!token) {
         resultDiv.className = 'validation-result error show';
@@ -31,8 +33,9 @@ async function saveToken() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-SETUP-KEY': setupKey
             },
-            body: JSON.stringify({ token: token })
+            body: JSON.stringify({ token: token, setup_key: setupKey })
         });
         
         const data = await response.json();
