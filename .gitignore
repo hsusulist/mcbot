@@ -55,3 +55,6 @@ pyproject.toml
 
 # Other sensitive files
 minecraft_bot.db
+data/
+data/*.json
+data/*.json

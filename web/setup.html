@@ -106,10 +106,7 @@
                         <h4>Step 3: Configure Your Bot Token</h4>
                         
                         <div class="token-setup">
-                            <div class="token-input-group">
-                                <label for="setupKey">🔐 Setup Key (server must be configured)</label>
-                                <input id="setupKey" placeholder="Enter setup key provided when configuring the server" />
-                            </div>
+                            <!-- Setup key removed: bots can be added by logged-in users -->
                             <div class="token-input-group">
                                 <label for="token">🔑 Paste your Discord bot token here:</label>
                                 <textarea 
@@ -118,6 +115,10 @@
                                     rows="4"
                                 ></textarea>
                             </div>
+                                <div class="token-input-group">
+                                    <label for="botName">🤖 Bot Display Name (optional)</label>
+                                    <input id="botName" placeholder="Friendly name shown in the Bots list (e.g. MyServerBot)" />
+                                </div>
                             <button class="btn btn-primary" onclick="saveToken()">
                                 <span>💾 Save Token & Start Bot</span>
                             </button>

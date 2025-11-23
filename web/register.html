@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register — Discord Bot Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .auth-card{ max-width:420px; margin:40px auto; background:var(--white); padding:24px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.08); }
+    .auth-card label{ display:block; font-weight:700; margin-top:12px; color:var(--darker); }
+    .auth-card input, .auth-card select{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6e6e6; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <h2>Create your account</h2>
+    <label>Username</label>
+    <input id="username" />
+    <label>Password</label>
+    <input id="password" type="password" />
+    <label>Confirm Password</label>
+    <input id="confirm-password" type="password" />
+    <label>Account Type</label>
+    <select id="type"><option value="noemail">No-email</option><option value="email">Email</option></select>
+    <div id="email-row" style="display:none;">
+      <label>Email</label>
+      <input id="email" />
+    </div>
+    <div style="margin-top:16px; display:flex; gap:8px; justify-content:flex-end;">
+      <a href="/login" style="align-self:center; color:var(--primary);">Login</a>
+      <button class="btn btn-primary" onclick="register()">Create Account</button>
+    </div>
+    <div id="reg-result" style="margin-top:12px;color:#c00;"></div>
+  </div>
+  <script>
+  document.getElementById('type').addEventListener('change', e=>{
+    document.getElementById('email-row').style.display = e.target.value==='email' ? 'block' : 'none';
+  });
+  async function register(){
+    const u=document.getElementById('username').value.trim();
+    const p=document.getElementById('password').value;
+    const cp=document.getElementById('confirm-password').value;
+    const t=document.getElementById('type').value;
+    const em=document.getElementById('email').value.trim();
+    const r=document.getElementById('reg-result'); r.textContent='';
+
+    // client-side validation
+    if(!u || !p){ r.textContent='Username and password required'; return; }
+    if(p !== cp){ r.textContent='Passwords do not match'; return; }
+    if(p.length < 8){ r.textContent='Password must be at least 8 characters'; return; }
+    if(p.length > 128){ r.textContent='Password too long'; return; }
+    // simple strength check: must contain letters and numbers
+    if(!(/[a-zA-Z]/.test(p) && /[0-9]/.test(p))){ r.textContent='Password should include letters and numbers'; return; }
+
+    try{
+      const res=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,type:t,email:em})});
+      const d=await res.json();
+      if(d.success){ window.location.href='/login'; } else { r.textContent=d.message||'Register failed'; }
+    }catch(e){ r.textContent='Request failed'; }
+  }
+  </script>
+  <script src="/static/js/auth.js"></script>
+</body>
+</html>

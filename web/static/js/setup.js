@@ -1,10 +1,12 @@
 async function saveToken() {
     const tokenInput = document.getElementById('token');
     const setupKeyInput = document.getElementById('setupKey');
+    const botNameInput = document.getElementById('botName');
     const resultDiv = document.getElementById('validation-result');
     const token = tokenInput.value.trim();
     const button = document.querySelector('.btn-primary');
     const setupKey = setupKeyInput ? setupKeyInput.value.trim() : '';
+    const botName = botNameInput ? botNameInput.value.trim() : '';
     
     if (!token) {
         resultDiv.className = 'validation-result error show';
@@ -29,17 +31,24 @@ async function saveToken() {
     button.innerHTML = '<span class="spinner"></span> <span>Saving...</span>';
     
     try {
-        const response = await fetch('/api/token/save', {
+        // require login
+        const me = await (await fetch('/api/me')).json();
+        if (!me || !me.user) {
+            resultDiv.className = 'validation-result error show';
+            resultDiv.innerHTML = '<strong>❌ Error:</strong> You must be logged in to add a bot. Redirecting to login...';
+            setTimeout(()=>window.location.href='/login',800);
+            return;
+        }
+
+        // POST as authenticated user; setup key no longer required
+        const response = await fetch('/api/bots', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-SETUP-KEY': setupKey
-            },
-            body: JSON.stringify({ token: token, setup_key: setupKey })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token, name: botName })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             resultDiv.className = 'validation-result success show';
             resultDiv.innerHTML = `
@@ -56,9 +65,7 @@ async function saveToken() {
             `;
             tokenInput.value = '';
             
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 5000);
+            setTimeout(() => { window.location.href = '/bots'; }, 800);
         } else {
             resultDiv.className = 'validation-result error show';
             resultDiv.innerHTML = `<strong>❌ Error:</strong> ${data.message}`;

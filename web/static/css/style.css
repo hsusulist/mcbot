@@ -139,6 +139,16 @@ body {
     align-items: center;
 }
 
+/* auth controls in top-right */
+.auth-controls { display:flex; gap:8px; align-items:center; }
+.auth-controls .btn { padding:0.5rem 0.8rem; border-radius:8px; font-weight:700; }
+.auth-controls .btn-primary { padding:0.5rem 0.8rem; }
+
+/* pre-start overlay card */
+#prestart-overlay .overlay-card{ background:var(--white); padding:2rem; border-radius:12px; max-width:440px; text-align:center; box-shadow:0 12px 48px rgba(0,0,0,0.3); }
+#prestart-overlay .overlay-card h2{ margin-bottom:0.5rem; color:var(--darker); }
+#prestart-overlay .overlay-card p{ color:var(--gray); }
+
 .page-title h1 {
     font-size: 2rem;
     color: var(--darker);
@@ -573,4 +583,10 @@ code {
     .quest-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Desktop defensive rules: keep sidebar visible and main-content offset */
+@media (min-width: 969px) {
+    .sidebar { transform: translateX(0) !important; }
+    .main-content { margin-left: var(--sidebar-width) !important; }
 }

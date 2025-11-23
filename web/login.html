@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Discord Bot Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .auth-card{ max-width:420px; margin:40px auto; background:var(--white); padding:24px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.08); }
+    .auth-card label{ display:block; font-weight:700; margin-top:12px; color:var(--darker); }
+    .auth-card input{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6e6e6; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <h2>Login to your account</h2>
+    <label>Username</label>
+    <input id="username" />
+    <label>Password</label>
+    <input id="password" type="password" />
+    <div style="margin-top:16px; display:flex; gap:8px; justify-content:flex-end;">
+      <a href="/register" style="align-self:center; color:var(--primary);">Register</a>
+      <button class="btn btn-primary" onclick="login()">Login</button>
+    </div>
+    <div id="login-result" style="margin-top:12px;color:#c00;"></div>
+  </div>
+
+  <script>
+  async function login(){
+    const u=document.getElementById('username').value.trim();
+    const p=document.getElementById('password').value;
+    const r=document.getElementById('login-result'); r.textContent='';
+    try{
+      const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+      const d=await res.json();
+      if(d.success){ window.location.href='/mybots'; } else { r.textContent=d.message||'Login failed'; }
+    }catch(e){ r.textContent='Request failed'; }
+  }
+  </script>
+  <script src="/static/js/auth.js"></script>
+</body>
+</html>

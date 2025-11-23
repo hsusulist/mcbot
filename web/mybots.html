@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Bots — Discord Bot Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .bot-row{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #f0f0f0}
+    .bot-info .bot-name{font-weight:700}
+    .bot-actions button{margin-left:8px}
+    .add-group{display:flex;gap:8px;align-items:center}
+    .add-group input{padding:8px;border-radius:8px;border:1px solid #e6e6e6}
+  </style>
+ </head>
+ <body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>🤖 Discord Bot</h1>
+        <p>Minecraft Quest System</p>
+      </div>
+      <nav class="nav-menu">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <a href="/" class="nav-link">
+            <span class="icon">🏠</span>
+            <span>Home</span>
+          </a>
+          <a href="/setup" class="nav-link">
+            <span class="icon">🔑</span>
+            <span>Bot Setup</span>
+          </a>
+          <a href="/mybots" class="nav-link active">
+            <span class="icon">🧰</span>
+            <span>My Bots</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-bar">
+        <div class="page-title">
+          <h1>My Bots</h1>
+          <p>Manage the bots you own</p>
+        </div>
+        <div class="status-badge offline" id="bot-status">
+          <span class="status-indicator"></span>
+          <span id="status-text">Bot Offline</span>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <h2>Your Bots</h2>
+          <div style="flex:1; margin-left:12px;">
+            <form id="add-form" class="add-group">
+              <input id="add-token" placeholder="Bot Token (paste)" style="flex:1" />
+              <input id="add-name" placeholder="Display name (optional)" style="width:220px" />
+              <button class="btn btn-primary" type="submit">Add</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="mybots-list" style="margin-top:16px;"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  async function loadMyBots(){
+    const meRes = await fetch('/api/me'); const meData = await meRes.json(); const me = meData.user;
+    if(!me){ window.location.href='/login'; return; }
+    const res = await fetch('/api/bots'); const data = await res.json(); const bots = (data.bots||[]).filter(b=>b.ownerId===me.id);
+    const el = document.getElementById('mybots-list');
+    if(!bots.length){ el.innerHTML = '<div class="empty">No bots yet. Use the add form or Setup.</div>'; return; }
+    el.innerHTML = bots.map(b=>`<div class="bot-row" data-id="${b.id}">
+      <div class="bot-info"><div class="bot-name">${escapeHTML(b.name||'Unnamed')}</div><div class="bot-tag">${escapeHTML(b.userTag||'')}</div></div>
+      <div class="bot-actions">${b.online?'<span style="color:var(--success);font-weight:700">Online</span>':'<span>Offline</span>'} <button data-action="start">Start</button><button data-action="stop">Stop</button><button data-action="delete">Delete</button></div>
+    </div>`).join('\n');
+
+    el.querySelectorAll('button[data-action]').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        const action = btn.getAttribute('data-action');
+        const row = btn.closest('.bot-row'); const id = row.getAttribute('data-id');
+        if(action==='delete'){
+          if(!confirm('Delete this bot?')) return;
+          const r = await fetch(`/api/bots/${id}`,{method:'DELETE'}); const j = await r.json(); if(!j.success) return alert(j.message||'Failed');
+        } else {
+          await fetch(`/api/bots/${id}/${action}`,{method:'POST'});
+        }
+        await loadMyBots();
+      });
+    });
+  }
+
+  document.getElementById('add-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const token = document.getElementById('add-token').value.trim();
+    const name = document.getElementById('add-name').value.trim();
+    if(!token) return alert('Paste a bot token');
+    const btn = e.submitter; btn.disabled = true;
+    try{
+      const res = await fetch('/api/bots',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token, name})});
+      const d = await res.json(); if(!d.success) return alert(d.message||'Failed to add');
+      document.getElementById('add-token').value=''; document.getElementById('add-name').value='';
+      await loadMyBots();
+    }catch(err){ alert('Error adding bot'); }
+    btn.disabled = false;
+  });
+
+  function escapeHTML(s){ return String(s||'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  loadMyBots();
+  </script>
+
+  <script src="/static/js/mobile-menu.js"></script>
+  <script src="/static/js/auth.js"></script>
+ </body>
+ </html>

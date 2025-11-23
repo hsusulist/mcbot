@@ -34,38 +34,39 @@ A feature-rich Discord bot for Minecraft servers with economy, quests, and gambl
 
 ## 🎮 Commands
 
-**Prefix:** `a ` (e.g., `a help`)
+**Prefix:** `ast ` (e.g., `ast help`)
 
 ### Admin Commands (Requires Administrator permission)
-- `a setup <ip> <port>` - Configure Minecraft server
-- `a setupchannel [#channel]` - Set console channel
+- `ast setup <ip> <port>` - Configure Minecraft server
+- `ast setupchannel [#channel]` - Set console channel
  - `ast status` - Set current channel as console channel
-- `a give @user <amount>` - Give coins to user
+- `ast give @user <amount>` - Give coins to user
 
 ### Economy Commands
-- `a balance [@user]` - Check balance
-- `a profile [@user]` - View detailed stats
-- `a leaderboard` - Top 10 richest players
+- `ast balance [@user]` - Check balance
+- `ast profile [@user]` - View detailed stats
+- `ast leaderboard` - Top 10 richest players
 
 ### Quest Commands
-- `a quests` - View your daily quests
-- `a daily` - Same as quests
+- `ast quests` - View your daily quests
+- `ast daily` - Same as quests
 
 ### Gambling Commands
-- `a cf <amount> <heads/tails>` - Coinflip gambling
-- `a gamble <amount>` - Slot machine
+- `ast cf <amount> <heads/tails>` - Coinflip gambling
+- `ast gamble <amount>` - Slot machine
 
 ### Info Commands
-- `a help` - Show all commands
-- `a ping` - Check bot latency
-- `a serverinfo` - View server configuration
+- `ast help` - Show all commands
+- `ast ping` - Check bot latency
+- `ast serverinfo` - View server configuration
 
 ## 🚀 Setup
 
 1. Add your Discord Bot Token to the secrets
 2. Invite the bot to your server with proper permissions
-3. Use `a setup` to configure your Minecraft server
-4. Start earning coins through quests and gambling!
+3. Use `ast setup` to configure your Minecraft server
+4. (Optional) Previously this project used a `SETUP_KEY` to restrict web-based bot setup. That key is no longer required — you can add bots via the web UI when logged in.
+5. Start earning coins through quests and gambling!
 
 ## 📊 Database
 

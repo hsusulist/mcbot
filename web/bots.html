@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bots — Discord Bot Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+      .bot-row{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #f0f0f0}
+      .bot-name{font-weight:700}
+      .bot-actions button{margin-left:8px}
+      #bots-list .empty{color:var(--gray)}
+      #search{padding:10px;border-radius:8px;border:1px solid #e6e6e6}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🤖 Discord Bot</h1>
+                <p>Minecraft Quest System</p>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="/" class="nav-link">
+                        <span class="icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="/setup" class="nav-link">
+                        <span class="icon">🔑</span>
+                        <span>Bot Setup</span>
+                    </a>
+                    <a href="/bots" class="nav-link active">
+                        <span class="icon">🤖</span>
+                        <span>Bots</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>Bots</h1>
+                    <p>Manage saved bots and choose which ones to run</p>
+                </div>
+                <div class="status-badge online" id="bot-status">
+                    <span class="status-indicator"></span>
+                    <span id="status-text">Loading...</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div style="display:flex; gap:12px; align-items:center; justify-content:space-between;">
+                    <h2>Saved Bots</h2>
+                    <div style="flex:0 0 320px;">
+                        <input id="search" placeholder="Search bots by name or tag" style="width:100%; padding:8px;" />
+                    </div>
+                </div>
+
+                <div id="bots-list" style="margin-top:1rem;"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/mobile-menu.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/bots.js"></script>
+</body>
+</html>

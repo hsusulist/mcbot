@@ -31,4 +31,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    // set active nav-link based on current path (robust matching)
+    try{
+        const rawPath = window.location.pathname || '/';
+        const path = rawPath.replace(/\/+$|^\s+|\s+$/g,'') || '/';
+        // normalize links and clear previous active
+        navLinks.forEach(link=> link.classList.remove('active'));
+        navLinks.forEach(link=>{
+            let href = (link.getAttribute('href')||'/').toString();
+            // turn absolute into pathname if needed
+            try{ if(href.startsWith('http')) href = new URL(href).pathname; }catch(e){}
+            href = href.replace(/\/+$/,'') || '/';
+            if(href === path || (href !== '/' && path.startsWith(href + '/')) || (href !== '/' && path === href)){
+                link.classList.add('active');
+            }
+        });
+    }catch(e){ console.warn('nav active error',e); }
 });
